@@ -1,0 +1,58 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+<Layout>
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+
+            <div class="text-center mb-12">
+              <h1 class="text-4xl md:text-6xl font-bold mb-4">Contáctanos</h1>
+              <p class="text-xl text-muted-foreground max-w-4xl mx-auto">
+                  Si tienes alguna duda o comentario de la plataforma envíanos un mensaje.
+              </p>
+            </div>
+
+
+            <div class="max-w-5xl mx-auto">
+                <section class="border-2 rounded-3xl bg-card text-card-foreground mb-8">
+                    <form name="contact" action="/pages/success"  data-netlify="true" class="space-y-6 p-4">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div class="space-y-2">
+                            <label for="name" class="text-sm font-medium">Nombre Completo</label>
+                            <input name="name" class="w-full h-11 px-3 rounded-md border bg-background" />
+                          </div>
+
+                          <div class="space-y-2">
+                            <label for="email" class="text-sm font-medium">Correo Eléctronico</label>
+                            <input name="email" class="w-full h-11 px-3 rounded-md border bg-background" />
+                          </div>
+
+                          <div class="space-y-2">
+                            <label for="phone" class="text-sm font-medium">Teléfono</label>
+                            <input name="phone" class="w-full h-11 px-3 rounded-md border bg-background" />
+                          </div>
+
+                          <div class="space-y-2">
+                            <label for="message" class="text-sm font-medium">Mensaje *</label>
+                            <textarea
+                              name="message"
+                              placeholder="..."
+                              class="w-full min-h-[120px] px-3 py-2 rounded-md border bg-background"
+                              required
+                            ></textarea>
+                          </div>
+                        </div>
+
+                        <button
+                          type="submit"
+                          class="w-full inline-flex items-center justify-center h-12 rounded-full bg-primary text-primary-foreground text-base hover:opacity-95 disabled:opacity-60 cursor-pointer"
+                        >
+                            Enviar mensaje
+                        </button>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </section>
+</Layout>
