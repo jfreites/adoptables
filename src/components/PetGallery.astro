@@ -1,0 +1,144 @@
+---
+// Props: images: string[], petName: string
+// FIXME: replace string[] with proper type if available
+// Uses a tiny inline script to manage currentIndex and UI updates.
+
+export interface Props {
+  images: string[];
+  petName: string;
+}
+
+const { images = [], petName = 'Pet' } = Astro.props as Props;
+const hasMany = images.length > 1;
+---
+<div class="space-y-4" id="pet-gallery" data-count={images.length}>
+  <div class="relative aspect-[4/3] overflow-hidden rounded-3xl bg-muted">
+    <img
+      id="pg-main"
+      src={images[0].src || '/fallbacks/dog-placeholder.jpg'}
+      alt={`${petName} - Photo 1`}
+      class="w-full h-full object-cover"
+      loading="eager"
+      onerror="this.onerror=null;this.src='/fallbacks/dog-placeholder.jpg'"
+    />
+
+    {hasMany && (
+      <>
+        <!-- Prev -->
+        <button
+          type="button"
+          class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full w-12 h-12 shadow-lg bg-secondary text-secondary-foreground inline-flex items-center justify-center"
+          data-action="prev"
+          aria-label="Previous image"
+        >
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <!-- Next -->
+        <button
+          type="button"
+          class="absolute right-4 top-1/2 -translate-y-1/2 rounded-full w-12 h-12 shadow-lg bg-secondary text-secondary-foreground inline-flex items-center justify-center"
+          data-action="next"
+          aria-label="Next image"
+        >
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+
+        <!-- Dots -->
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2" id="pg-dots">
+          {images.map((_, index) => (
+            <button
+              type="button"
+              class={`w-2 h-2 rounded-full transition-all ${index === 0 ? 'bg-primary w-6' : 'bg-white/50 hover:bg-white/80'}`}
+              aria-label={`Go to image ${index + 1}`}
+              data-index={index}
+            />
+          ))}
+        </div>
+      </>
+    )}
+  </div>
+
+  {hasMany && (
+    <div class="grid grid-cols-4 gap-2" id="pg-thumbs">
+      {images.map((image, index) => (
+        <button
+          type="button"
+          class={`aspect-square rounded-2xl overflow-hidden border-2 transition-all ${index === 0 ? 'border-primary scale-95' : 'border-transparent hover:border-muted-foreground/30'}`}
+          data-index={index}
+          aria-label={`Select image ${index + 1}`}
+        >
+          <img
+            src={image.src}
+            alt={`${petName} thumbnail ${index + 1}`}
+            class="w-full h-full object-cover"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='/fallbacks/dog-placeholder.jpg'"
+          />
+        </button>
+      ))}
+    </div>
+  )}
+</div>
+
+<script is:inline>
+  (function(){
+    const root = document.getElementById('pet-gallery');
+    if (!root) return;
+    const count = Number(root.dataset.count || '0');
+    const main = document.getElementById('pg-main');
+    const dots = document.getElementById('pg-dots');
+    const thumbs = document.getElementById('pg-thumbs');
+    const prev = root.querySelector('[data-action="prev"]');
+    const next = root.querySelector('[data-action="next"]');
+
+    const sources = Array.from(thumbs ? thumbs.querySelectorAll('img') : []).map(img => img.getAttribute('src')).filter(Boolean);
+    let current = 0;
+
+    function update(i){
+      if (!main) return;
+      current = (i + count) % count;
+      const src = sources[current] || main.getAttribute('src');
+      if (src) main.setAttribute('src', src);
+      if (main && main.alt) main.alt = main.alt.replace(/Photo \d+$/, `Photo ${current+1}`);
+
+      // dots
+      if (dots) {
+        Array.from(dots.children).forEach((d, idx) => {
+          d.classList.toggle('bg-primary', idx === current);
+          d.classList.toggle('w-6', idx === current);
+          d.classList.toggle('bg-white/50', idx !== current);
+          d.classList.toggle('hover:bg-white/80', idx !== current);
+        });
+      }
+      // thumbs
+      if (thumbs) {
+        Array.from(thumbs.children).forEach((b, idx) => {
+          b.classList.toggle('border-primary', idx === current);
+          b.classList.toggle('scale-95', idx === current);
+          b.classList.toggle('border-transparent', idx !== current);
+        });
+      }
+    }
+
+    if (prev) prev.addEventListener('click', () => update(current - 1));
+    if (next) next.addEventListener('click', () => update(current + 1));
+
+    if (dots) dots.addEventListener('click', (e) => {
+      const t = e.target.closest('button');
+      if (!t) return;
+      const idx = Number(t.dataset.index || '0');
+      update(idx);
+    });
+
+    if (thumbs) thumbs.addEventListener('click', (e) => {
+      const t = e.target.closest('button');
+      if (!t) return;
+      const idx = Number(t.dataset.index || '0');
+      update(idx);
+    });
+  })();
+</script>

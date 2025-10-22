@@ -1,0 +1,106 @@
+---
+
+import Navbar from "@/components/Navbar.astro";
+import PetCard from "@/components/PetCard.astro";
+import petDog1 from "@/assets/pet-dog-1.jpg";
+import petCat1 from "@/assets/pet-cat-1.jpg";
+import petDog2 from "@/assets/pet-dog-2.jpg";
+import petCat2 from "@/assets/pet-cat-2.jpg";
+import Layout from "@/layouts/Layout.astro";
+
+const allPets = [
+  { id: '1', name: 'Buddy', image: petDog1, age: '2 years old', breed: 'Golden Retriever', location: 'San Francisco, CA', type: 'dog' as const },
+  { id: '2', name: 'Luna', image: petCat1, age: '1 year old', breed: 'Orange Tabby', location: 'Los Angeles, CA', type: 'cat' as const },
+  { id: '3', name: 'Max', image: petDog2, age: '3 years old', breed: 'Beagle', location: 'Seattle, WA', type: 'dog' as const },
+  { id: '4', name: 'Whiskers', image: petCat2, age: '2 years old', breed: 'Persian', location: 'Portland, OR', type: 'cat' as const },
+  { id: '5', name: 'Charlie', image: petDog1, age: '4 years old', breed: 'Golden Retriever', location: 'Austin, TX', type: 'dog' as const },
+  { id: '6', name: 'Mittens', image: petCat1, age: '3 years old', breed: 'Tabby Mix', location: 'Denver, CO', type: 'cat' as const },
+  { id: '7', name: 'Rocky', image: petDog2, age: '5 years old', breed: 'Beagle Mix', location: 'Boston, MA', type: 'dog' as const },
+  { id: '8', name: 'Snowball', image: petCat2, age: '1 year old', breed: 'Persian Mix', location: 'Miami, FL', type: 'cat' as const },
+];
+
+const PETS_PER_PAGE = 6;
+
+const url = new URL(Astro.request.url);
+const currentPageParam = Number(url.searchParams.get('page') ?? '1');
+const totalPages = Math.ceil(allPets.length / PETS_PER_PAGE);
+const currentPage = Math.min(Math.max(1, currentPageParam || 1), totalPages);
+
+const startIndex = (currentPage - 1) * PETS_PER_PAGE;
+const endIndex = startIndex + PETS_PER_PAGE;
+const currentPets = allPets.slice(startIndex, endIndex);
+
+const pageHref = (page: number) => `?page=${page}`;
+---
+<Layout>
+<div class="min-h-screen">
+  <Navbar />
+  <main class="py-12">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-6xl font-bold mb-4">Find Your New Best Friend</h1>
+        <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+          Browse our available pets and find the perfect companion for your family
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        {currentPets.map((pet) => (
+          <PetCard {...pet} />
+        ))}
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <nav class="flex items-center justify-center gap-2" aria-label="Pagination">
+          <!-- Prev -->
+          <a
+            href={currentPage > 1 ? pageHref(currentPage - 1) : undefined}
+            class={`rounded-full border-2 inline-flex items-center justify-center w-10 h-10 ${currentPage === 1 ? 'pointer-events-none opacity-40' : 'hover:shadow-md'} text-foreground border-input`}
+            aria-disabled={currentPage === 1}
+          >
+            <!-- ChevronLeft -->
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </a>
+
+          <div class="flex gap-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <a
+                href={pageHref(page)}
+                class={`rounded-full inline-flex items-center justify-center w-10 h-10 border-2 ${currentPage === page ? 'bg-primary text-primary-foreground border-transparent' : 'border-input hover:shadow-md'}`}
+                aria-current={currentPage === page ? 'page' : undefined}
+              >
+                {page}
+              </a>
+            ))}
+          </div>
+
+          <!-- Next -->
+          <a
+            href={currentPage < totalPages ? pageHref(currentPage + 1) : undefined}
+            class={`rounded-full border-2 inline-flex items-center justify-center w-10 h-10 ${currentPage === totalPages ? 'pointer-events-none opacity-40' : 'hover:shadow-md'} text-foreground border-input`}
+            aria-disabled={currentPage === totalPages}
+          >
+            <!-- ChevronRight -->
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
+        </nav>
+      )}
+    </div>
+  </main>
+</div>
+</Layout>
+
+<!-- Optional smooth scroll-to-top when navigating between pages -->
+<script is:inline>
+  if (typeof window !== 'undefined' && 'scrollBehavior' in document.documentElement.style) {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('page')) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+</script>

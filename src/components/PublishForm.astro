@@ -1,0 +1,90 @@
+---
+import { actions } from "astro:actions"
+---
+
+<section class="w-full max-w-xl mx-auto mt-12" style="height: 900px;">
+  <form
+    method="POST"
+    id="publish-form"
+    class="flex flex-col gap-4"
+    action={actions.publish_pet}
+  >
+    <div class="flex flex-col gap-3">
+        <input
+            required
+            name="name"
+            class="flex-1 px-4 py-3 rounded-lg bg-black/50 border border-brand/50 backdrop-blur-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
+            placeholder="Nombre de la mascota"
+        />
+        <!-- <input
+            required
+            type="email"
+            name="email"
+            class="flex-1 px-4 py-3 rounded-lg bg-black/50 border border-brand/50 backdrop-blur-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
+            placeholder="Contenido exclusivo sólo para los reals"
+        /> -->
+        <input
+            required
+            name="bio"
+            class="flex-1 px-4 py-3 rounded-lg bg-black/50 border border-brand/50 backdrop-blur-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
+            placeholder="Cuentanos la historia de la mascota. Se breve."
+        />
+        <input
+            required
+            name="species"
+            class="flex-1 px-4 py-3 rounded-lg bg-black/50 border border-brand/50 backdrop-blur-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
+            placeholder="Gato o perro?"
+        />
+        <button
+            type="submit"
+            class="px-6 py-3 bg-brand cursor-pointer hover:bg-yellow-400 text-black font-bold rounded-lg transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+        >Publicar</button>
+    </div>
+
+    <div id="processing-message" class="hidden text-sm text-center text-brand">
+      ¡Ya tu adoptable ha sido publicado!
+    </div>
+  </form>
+</section>
+
+<script>
+    import { actions, isInputError } from "astro:actions"
+
+    const form = document.getElementById("publish-form") as HTMLFormElement
+        const message = document.getElementById(
+        "processing-message"
+    ) as HTMLDivElement
+
+    message.classList.add("hidden")
+    message.classList.remove("text-red-500", "text-green-500")
+
+    form.addEventListener("submit", async (event) => {
+        console.log("submit")
+
+        event.preventDefault()
+
+        const formData = new FormData(form)
+        const name = formData.get("name") as string
+        const bio = formData.get("bio") as string
+
+        const { data, error } = await actions.publish_pet({ name, bio })
+
+        if (error) {
+            const messageText = isInputError(error)
+                ? error?.fields?.name?.join(", ")
+                : error.message
+
+            message.textContent =
+                messageText ?? "Error al publicar el adoptable"
+            message.classList.remove("hidden")
+            message.classList.add("text-red-500")
+        }
+
+        if (data) {
+            //throwConfetti()
+            message.textContent = data.message
+            message.classList.remove("hidden")
+            message.classList.add("text-green-500")
+        }
+    })
+</script>

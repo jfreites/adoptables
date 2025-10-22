@@ -1,0 +1,115 @@
+---
+// - Accordion implemented with <details>/<summary> + tiny script to mimic "type=single, collapsible"
+
+import Layout from "@/layouts/Layout.astro";
+
+const faqs = [
+  {
+    question: "How do I adopt a pet?",
+    answer:
+      "Browse our available pets on the 'Find Pets' page. When you find a pet you're interested in, click 'Apply for Adoption' on their profile page. You'll need to create an account and fill out an adoption application. Our team will review your application and contact you within 2-3 business days.",
+  },
+  {
+    question: "What is the adoption process?",
+    answer:
+      "The adoption process includes: 1) Submitting an application, 2) Application review by our team, 3) Home visit and reference checks, 4) Meet and greet with the pet, 5) Final approval and signing adoption contract, 6) Taking your new family member home! The entire process typically takes 7-14 days.",
+  },
+  {
+    question: "Are there any adoption fees?",
+    answer:
+      "Yes, adoption fees vary by animal type and age. Dogs: $200-$400, Cats: $100-$200, Small animals: $50-$100. All adoption fees include spaying/neutering, vaccinations, microchipping, and an initial health check. These fees help us continue our rescue work and care for more animals in need.",
+  },
+  {
+    question: "What if my lifestyle changes and I can no longer care for my adopted pet?",
+    answer:
+      "We understand that circumstances can change. If you can no longer care for your adopted pet, please contact us immediately. All our adoptions come with a lifetime return policy - we will always take back any animal adopted from us, no questions asked. We never want our animals to end up in shelters or unsuitable homes.",
+  },
+  {
+    question: "Can I foster a pet before adopting?",
+    answer:
+      "Absolutely! We have a foster-to-adopt program that allows you to foster a pet for 2-4 weeks before making a final adoption decision. This is a great way to ensure the pet is the right fit for your family and home environment. Contact us to learn more about becoming a foster parent.",
+  },
+  {
+    question: "Are the pets house-trained?",
+    answer:
+      "Training levels vary by animal. Each pet's profile includes information about their training status and behavior. Some pets are fully house-trained, while others may need additional training. We provide guidance and resources to help you with training, and many of our pets have been in foster homes where they've learned good house manners.",
+  },
+  {
+    question: "Do you have specific requirements for adopters?",
+    answer:
+      "Yes, requirements vary by animal but generally include: being 21+ years old, having landlord approval if renting, financial stability for pet care, and commitment to providing proper care. For dogs, we may require a fenced yard. For cats, we require indoor-only homes or secure outdoor access. Each pet's profile lists any specific requirements.",
+  },
+  {
+    question: "Can I meet the pet before applying?",
+    answer:
+      "We recommend submitting an application first. Once approved, we'll arrange a meet and greet at our facility or with the foster family. This ensures serious inquiries and protects our animals from unnecessary stress. However, you can attend our adoption events to meet multiple pets without an application.",
+  },
+  {
+    question: "What if I already have other pets?",
+    answer:
+      "Many of our pets do well with other animals! Each pet's profile indicates if they're compatible with dogs, cats, or other pets. During the application process, we'll discuss your current pets and may arrange a meet and greet to ensure everyone gets along. We want to make sure it's a good fit for all animals involved.",
+  },
+  {
+    question: "How do I submit a pet for adoption?",
+    answer:
+      "If you need to rehome your pet or have found a stray, please use our 'Submit Pet' form. We'll review the information and contact you within 24-48 hours. Please note that we have limited space, so we prioritize urgent cases and may provide resources to help you rehome your pet directly if we're at capacity.",
+  },
+];
+---
+<Layout>
+  <div class="container mx-auto px-4 py-12">
+    <div class="max-w-4xl mx-auto">
+      <!-- Card -->
+      <section class="border-2 rounded-3xl bg-card text-card-foreground mb-8">
+        <header class="p-8 border-b">
+          <h1 class="text-4xl text-center font-bold">Preguntas Frecuentes</h1>
+          <p class="text-center text-base text-muted-foreground mt-2">
+            Todo lo que necesitas saber sobre el uso del sitio de Adoptables
+          </p>
+        </header>
+
+        <div id="faq-accordion" class="p-6">
+          {faqs.map((faq, i) => (
+            <details class="group border-b last:border-0" data-accordion-item>
+              <summary class="list-none py-4 flex items-center justify-between cursor-pointer select-none text-left text-lg font-semibold">
+                <span>{faq.question}</span>
+                <svg class="w-5 h-5 transition-transform duration-200 group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </summary>
+              <div class="pb-4 text-base text-muted-foreground leading-relaxed">
+                {faq.answer}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <!-- Secondary card -->
+      <section class="border-2 rounded-3xl bg-primary/5">
+        <header class="p-8">
+          <h2 class="text-2xl text-center font-bold">¿Aún tienes dudas?</h2>
+          <p class="text-center text-muted-foreground mt-2">
+            Envía un correo electrónico a <a href="mailto:hola@adoptables.mx" class="text-primary font-semibold hover:underline">hola@adoptables.mx</a>
+            o escríbenos por Whatsapp <a href="tel:+15551234567" class="text-primary font-semibold hover:underline">(555) 123-4567</a>
+          </p>
+        </header>
+      </section>
+    </div>
+  </div>
+</Layout>
+
+<!-- Make the accordion behave like type="single" collapsible -->
+<script is:inline>
+  const container = document.getElementById('faq-accordion');
+  if (container) {
+    container.addEventListener('toggle', (e) => {
+      const target = e.target;
+      if (!(target instanceof HTMLDetailsElement) || !target.open) return;
+      // Close others
+      for (const el of container.querySelectorAll('details[open]')) {
+        if (el !== target) el.removeAttribute('open');
+      }
+    }, true);
+  }
+</script>

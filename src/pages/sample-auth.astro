@@ -1,0 +1,107 @@
+---
+// Auth.astro — conversión desde React a Astro
+// - Reemplaza shadcn/ui por HTML semántico + Tailwind
+// - Los formularios hacen POST a Actions de Astro (ajusta rutas si usas otras):
+//   - /actions/auth/login
+//   - /actions/auth/signup
+//   - /actions/auth/oauth?provider=google|facebook (opcional)
+// - Incluye feedback de "loading" sin depender de React/toasts
+
+import Navbar from "@/components/Navbar.astro";
+
+const url = new URL(Astro.request.url);
+const next = url.searchParams.get('next') ?? '/';
+---
+<div class="min-h-screen bg-gradient-to-b from-background to-accent/20">
+  <Navbar />
+
+  <div class="container mx-auto px-4 py-12">
+    <div class="max-w-md mx-auto space-y-8">
+      <!-- Login Card -->
+      <section class="border-2 rounded-3xl bg-card text-card-foreground">
+        <header class="p-6 border-b">
+          <h1 class="text-2xl font-bold">Welcome Back</h1>
+          <p class="text-muted-foreground">Sign in to your account</p>
+        </header>
+        <div class="p-6 space-y-4">
+          <form method="POST" action="/actions/auth/login" class="space-y-4" data-loading>
+            <input type="hidden" name="next" value={next} />
+            <div class="space-y-2">
+              <label for="login-email" class="text-sm font-medium">Email</label>
+              <input id="login-email" name="email" type="email" placeholder="your@email.com" required class="w-full h-11 px-3 rounded-md border bg-background" />
+            </div>
+            <div class="space-y-2">
+              <label for="login-password" class="text-sm font-medium">Password</label>
+              <input id="login-password" name="password" type="password" placeholder="••••••••" required class="w-full h-11 px-3 rounded-md border bg-background" />
+            </div>
+            <button type="submit" class="w-full inline-flex items-center justify-center h-11 rounded-md bg-primary text-primary-foreground hover:opacity-95 disabled:opacity-60" data-loading-text="Signing in…">Sign In</button>
+          </form>
+
+          <!-- Separator -->
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center"><hr class="w-full border" /></div>
+            <div class="relative flex justify-center text-xs uppercase">
+              <span class="bg-card px-2 text-muted-foreground">Or continue with</span>
+            </div>
+          </div>
+
+          <!-- Social Logins (opcional: apunta a tu action/oauth) -->
+          <div class="grid grid-cols-2 gap-4">
+            <a href={`/actions/auth/oauth?provider=google&next=${encodeURIComponent(next)}`} class="inline-flex items-center justify-center h-11 rounded-md border hover:bg-muted">
+              <!-- Mail icon -->
+              <svg class="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"></path><path d="m22 6-10 7L2 6"></path></svg>
+              Google
+            </a>
+            <a href={`/actions/auth/oauth?provider=facebook&next=${encodeURIComponent(next)}`} class="inline-flex items-center justify-center h-11 rounded-md border hover:bg-muted">
+              <!-- Facebook icon -->
+              <svg class="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.7c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.7l-.4 2.9h-2.3v7A10 10 0 0 0 22 12Z"/></svg>
+              Facebook
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Register Card -->
+      <section class="border-2 rounded-3xl bg-card text-card-foreground">
+        <header class="p-6 border-b">
+          <h2 class="text-2xl font-bold">Create Account</h2>
+          <p class="text-muted-foreground">Don't have an account? Register here</p>
+        </header>
+        <div class="p-6">
+          <form method="POST" action="/actions/auth/signup" class="space-y-4" data-loading>
+            <input type="hidden" name="next" value={next} />
+            <div class="space-y-2">
+              <label for="register-name" class="text-sm font-medium">Full Name</label>
+              <input id="register-name" name="name" type="text" placeholder="John Doe" required class="w-full h-11 px-3 rounded-md border bg-background" />
+            </div>
+            <div class="space-y-2">
+              <label for="register-email" class="text-sm font-medium">Email</label>
+              <input id="register-email" name="email" type="email" placeholder="your@email.com" required class="w-full h-11 px-3 rounded-md border bg-background" />
+            </div>
+            <div class="space-y-2">
+              <label for="register-password" class="text-sm font-medium">Password</label>
+              <input id="register-password" name="password" type="password" placeholder="••••••••" required class="w-full h-11 px-3 rounded-md border bg-background" />
+            </div>
+            <button type="submit" class="w-full inline-flex items-center justify-center h-11 rounded-md bg-primary text-primary-foreground hover:opacity-95 disabled:opacity-60" data-loading-text="Creating account…">Create Account</button>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- Pequeño enhancement para mostrar estado "loading" al enviar formularios -->
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('form[data-loading]').forEach((form) => {
+      form.addEventListener('submit', () => {
+        const btn = form.querySelector('button[type="submit"]');
+        if (btn) {
+          btn.disabled = true;
+          const txt = btn.getAttribute('data-loading-text');
+          if (txt) btn.textContent = txt;
+        }
+      }, { once: true });
+    });
+  });
+</script>

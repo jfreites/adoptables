@@ -1,0 +1,74 @@
+---
+export const prerender = false;
+
+import PetCard from "@/components/PetCard.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getPets } from "@/services/pets";
+
+const PETS_PER_PAGE = 6;
+const url = new URL(Astro.request.url);
+const currentPageParam = Number(url.searchParams.get("page") ?? "1");
+
+const page = Number.isFinite(currentPageParam) ? Math.max(1, currentPageParam) : 1;
+
+const { pets, total } = await getPets(page, PETS_PER_PAGE);
+const totalPages = Math.max(1, Math.ceil(total / PETS_PER_PAGE));
+
+const pageHref = (p: number) => `?page=${p}`;
+---
+<Layout>
+  <section class="py-12">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-6xl font-bold mb-4">Encuentra Tu Nuevo <span class="text-primary">Mejor Amigo</span></h1>
+        <p class="text-xl text-muted-foreground max-w-4xl mx-auto">
+          Busca en nuestro listado de adoptables y encuentra el compañero perfecto para tu familia.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        {pets.length
+          ? pets.map((pet) => <PetCard {...pet} />)
+          : <p class="text-muted-foreground text-center col-span-full">No pets available.</p>}
+      </div>
+
+      {totalPages > 1 && (
+        <nav class="flex items-center justify-center gap-2" aria-label="Pagination">
+          <!-- Prev -->
+          <a
+            href={page > 1 ? pageHref(page - 1) : undefined}
+            class={`rounded-full border-2 inline-flex items-center justify-center w-10 h-10 ${page === 1 ? 'pointer-events-none opacity-40' : 'hover:shadow-md'} text-foreground border-input`}
+            aria-disabled={page === 1}
+          >
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </a>
+
+          <div class="flex gap-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <a
+                href={pageHref(p)}
+                class={`rounded-full inline-flex items-center justify-center w-10 h-10 border-2 ${page === p ? 'bg-primary text-primary-foreground border-transparent' : 'border-input hover:shadow-md'}`}
+                aria-current={page === p ? 'page' : undefined}
+              >
+                {p}
+              </a>
+            ))}
+          </div>
+
+          <!-- Next -->
+          <a
+            href={page < totalPages ? pageHref(page + 1) : undefined}
+            class={`rounded-full border-2 inline-flex items-center justify-center w-10 h-10 ${page === totalPages ? 'pointer-events-none opacity-40' : 'hover:shadow-md'} text-foreground border-input`}
+            aria-disabled={page === totalPages}
+          >
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
+        </nav>
+      )}
+    </div>
+  </section>
+</Layout>

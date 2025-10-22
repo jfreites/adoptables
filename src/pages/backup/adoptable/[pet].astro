@@ -1,0 +1,52 @@
+---
+import { supabase } from '@/lib/supabase';
+
+// export async function getStaticPaths() {
+//   return [
+//     { params: { pet: "niky" }},
+//   ];
+// }
+
+const { pet } = Astro.params;
+
+const { data, error } = await supabase
+  .from('pets')
+  .select('*')
+  .eq('id', pet)
+  .single();
+
+if (error || !data) {
+  // Handle error or post not found
+  return Astro.redirect('/404'); // Example: redirect to a 404 page
+}
+
+import Layout from '@/layouts/Layout.astro';
+import Header from "@/sections/Header.astro"
+import Footer from "@/sections/Footer.astro"
+---
+
+<Layout>
+  <div class="flex min-h-screen flex-col">
+    <Header />
+    <div class="flex flex-col max-w-5xl mx-auto py-6">
+        <div class="mt-4 rounded-xl p-4 bg-secondary text-secondary-foreground">
+            <img src="https://api.images.cat/300" class="w-full h-120 object-cover rounded-xl" alt={data.name} />
+            <h2 class="text-4xl text-foreground font-bold py-6">Hola, mi nombre es {data.name}</h2>
+            <p class="py-4">Gato - M/F - Edad aprox: 12 meses - Queretaro, 76143</p>
+            <div class="flex justify-center">
+                <a href="#" class="btn btn-primary">Quiero adoptar a {data.name}</a>
+            </div>
+        </div>
+
+        <div class="mt-4 rounded-xl p-4 bg-background text-foreground">
+            <p>Sobre {data.name}: <br>{data.bio}</p>
+        </div>
+
+        <div class="mt-4 rounded-xl p-4 bg-background text-foreground">
+            <p>Sobre su rescatista:</p>
+            <p>....</p>
+        </div>
+    </div>
+    <Footer />
+  </div>
+</Layout>

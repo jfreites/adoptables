@@ -1,0 +1,219 @@
+---
+interface Props {
+  user?: any;
+}
+
+const { user } = Astro.props;
+const pathname = Astro.url.pathname;
+const isActive = (path: string) => pathname === path;
+---
+<nav class="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border">
+  <div class="container mx-auto px-4 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 text-2xl font-bold text-primary">
+      <img class="w-56 mx-auto" src="/logo.svg" alt="adoptables logo" />
+    </a>
+
+    <!-- Desktop Navigation -->
+    <div class="hidden md:flex items-center gap-8">
+      <a
+        href="/"
+        class={`font-medium transition-colors hover:text-primary ${isActive('/') ? 'text-primary' : 'text-muted-foreground'}`}
+      >
+        Inicio
+      </a>
+      <a
+        href="/adoptables"
+        class={`font-medium transition-colors hover:text-primary ${isActive('/adoptables') ? 'text-primary' : 'text-muted-foreground'}`}
+      >
+        Adopta
+      </a>
+      <a
+        href="/como-funciona"
+        class={`font-medium transition-colors hover:text-primary ${isActive('/como-funciona') ? 'text-primary' : 'text-muted-foreground'}`}
+      >
+          ¿Cómo funciona?
+      </a>
+      <a
+        href="/blog"
+        class={`font-medium transition-colors hover:text-primary ${isActive('/blog') ? 'text-primary' : 'text-muted-foreground'}`}
+      >
+          Blog
+      </a>
+      <a
+        href="/preguntas-frecuentes"
+        class={`font-medium transition-colors hover:text-primary ${isActive('/preguntas-frecuentes') ? 'text-primary' : 'text-muted-foreground'}`}
+      >
+          FAQ
+      </a>
+
+      {user ? (
+        <!-- Authenticated user buttons -->
+        <div class="flex items-center gap-4">
+          <a
+            href="/dashboard"
+            class={`font-medium inline-flex gap-2 transition-colors hover:text-primary ${isActive('/dashboard') ? 'text-primary' : 'text-muted-foreground'}`}
+          >
+              <span>Tu Cuenta</span>
+
+              <span class="text-sm text-muted-foreground">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                </svg>
+              </span>
+          </a>
+          <form action="/api/logout" method="POST" class="inline">
+            <button
+              type="submit"
+              class="rounded-full inline-flex items-center justify-center px-6 py-2 text-sm font-medium bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500/50"
+            >
+              Salir
+            </button>
+          </form>
+        </div>
+      ) : (
+        <!-- Non-authenticated user buttons -->
+        <div class="flex items-center gap-4">
+          <a
+            href="/login"
+            class="font-medium transition-colors hover:text-primary text-muted-foreground"
+          >
+            Iniciar sesión
+          </a>
+          <a
+            href="/register"
+            class="rounded-full inline-flex items-center justify-center px-6 py-2 text-sm font-medium bg-primary text-primary-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary/50"
+          >
+            Crea tu cuenta
+          </a>
+        </div>
+      )}
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button
+      id="mobile-menu-toggle"
+      class="md:hidden p-2"
+      aria-label="Toggle menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      type="button"
+    >
+      <!-- Menu (open) icon -->
+      <svg data-icon="open" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+      <!-- X (close) icon -->
+      <svg data-icon="close" class="w-6 h-6 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden md:hidden border-t border-border bg-card/95 backdrop-blur-lg">
+    <div class="container mx-auto px-4 py-4 flex flex-col gap-4">
+      <a
+        href="/"
+        class={`font-medium py-2 ${isActive('/') ? 'text-primary' : 'text-muted-foreground'}`}
+      >
+          Inicio
+      </a>
+      <a
+        href="/adoptables"
+        class={`font-medium py-2 ${isActive('/adoptables') ? 'text-primary' : 'text-muted-foreground'}`}
+      >
+          Buscar Adoptable
+      </a>
+      <a
+        href="/como-funciona"
+        class={`font-medium py-2 ${isActive('/como-funciona') ? 'text-primary' : 'text-muted-foreground'}`}
+      >
+          ¿Como funciona?
+      </a>
+      <a
+        href="/preguntas-frecuentes"
+        class={`font-medium py-2 ${isActive('/preguntas-frecuentes') ? 'text-primary' : 'text-muted-foreground'}`}
+      >
+          Preguntas Frecuentes
+      </a>
+
+      {user ? (
+        <!-- Authenticated user mobile menu -->
+        <div class="flex flex-col gap-4 pt-2 border-t border-border">
+          <div class="text-sm text-muted-foreground">
+            Hola, {user.email?.split('@')[0]}
+          </div>
+          <a
+            href="/dashboard"
+            class={`font-medium py-2 ${isActive('/dashboard') ? 'text-primary' : 'text-muted-foreground'}`}
+          >
+            Dashboard
+          </a>
+          <form action="/api/logout" method="POST" class="inline">
+            <button
+              type="submit"
+              class="rounded-full w-full inline-flex items-center justify-center px-6 py-3 text-sm font-medium bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500/50"
+            >
+              Salir
+            </button>
+          </form>
+        </div>
+      ) : (
+        <!-- Non-authenticated user mobile menu -->
+        <div class="flex flex-col gap-4 pt-2 border-t border-border">
+          <a
+            href="/login"
+            class="font-medium py-2 text-muted-foreground"
+          >
+            Iniciar sesión
+          </a>
+          <a
+            href="/register"
+            class="rounded-full w-full inline-flex items-center justify-center px-6 py-3 text-sm font-medium bg-primary text-primary-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary/50"
+          >
+            Crea tu cuenta
+          </a>
+        </div>
+      )}
+    </div>
+  </div>
+</nav>
+
+<!-- Tiny script for the mobile toggle (no framework needed) -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('mobile-menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    if (!btn || !menu) return;
+
+    btn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', (!expanded).toString());
+      const openIcon = btn.querySelector('[data-icon="open"]');
+      const closeIcon = btn.querySelector('[data-icon="close"]');
+      if (openIcon && closeIcon) {
+        openIcon.classList.toggle('hidden');
+        closeIcon.classList.toggle('hidden');
+      }
+    });
+
+    // Close the menu when a link inside it is clicked (mobile UX)
+    menu.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (target && target.tagName === 'A') {
+        menu.classList.add('hidden');
+        btn.setAttribute('aria-expanded', 'false');
+        const openIcon = btn.querySelector('[data-icon="open"]');
+        const closeIcon = btn.querySelector('[data-icon="close"]');
+        if (openIcon && closeIcon) {
+          openIcon.classList.remove('hidden');
+          closeIcon.classList.add('hidden');
+        }
+      }
+    });
+  });
+</script>

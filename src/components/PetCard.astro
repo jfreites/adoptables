@@ -1,0 +1,60 @@
+---
+import type { ImageMetadata } from 'astro';
+
+export interface Props {
+  id: string;
+  name: string;
+  image: ImageMetadata | null; // TODO: this should be a string URL from Supabase Storage
+  age: string;
+  breed: string;
+  location: string;
+  type: 'dog' | 'cat';
+}
+
+const { id, name, image, age, breed, location, type } = Astro.props as Props;
+---
+<div class="group overflow-hidden border-2 hover:border-primary transition-all duration-300 hover:shadow-lg rounded-3xl bg-card">
+  <div class="relative overflow-hidden aspect-square">
+    <img
+      src={image?.src || (type === 'dog' ? '/fallbacks/dog-placeholder.jpg' : '/fallbacks/cat-placeholder.jpg')}
+      alt={name}
+      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+      loading="lazy"
+      decoding="async"
+      onerror={`this.onerror=null;this.src='${type === 'dog' ? '/fallbacks/dog-placeholder.jpg' : '/fallbacks/cat-placeholder.jpg'}';`}
+    />
+    <button
+      type="button"
+      class="absolute top-4 right-4 inline-flex items-center justify-center rounded-full w-10 h-10 shadow-md hover:scale-110 transition-transform bg-secondary text-secondary-foreground"
+      aria-label="Add to favorites"
+    >
+      <!-- Heart icon -->
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0-0-7.78z"/>
+      </svg>
+    </button>
+    <span class="absolute top-4 left-4 rounded-full px-3 py-1 text-sm font-semibold bg-primary text-primary-foreground">
+      {type === 'dog' ? '🐶 Dog' : '🐱 Cat'}
+    </span>
+  </div>
+
+  <div class="p-6 space-y-2">
+    <h3 class="text-2xl font-bold">{name}</h3>
+    <p class="text-muted-foreground">{breed}</p>
+    <p class="text-sm font-medium text-primary">{age}</p>
+    <div class="flex items-center gap-2 text-sm text-muted-foreground">
+      <!-- MapPin icon -->
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 1 1 18 0Z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+      <span>{location}</span>
+    </div>
+  </div>
+
+  <div class="p-6 pt-0">
+    <a href={`/adoptables/${id}`} class="w-full inline-flex items-center justify-center rounded-full text-base h-12 hover:shadow-md transition-shadow bg-primary text-primary-foreground px-4">
+      Conoce a {name}
+    </a>
+  </div>
+</div>

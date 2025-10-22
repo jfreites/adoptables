@@ -1,22 +1,80 @@
+---
+import "../styles/app.css"
+
+import Navbar from "@/components/Navbar.astro"
+import Footer from "@/components/Footer.astro";
+import { supabase } from "@/lib/supabase"
+
+// Check if user is authenticated globally
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+const refreshToken = Astro.cookies.get('sb-refresh-token')?.value;
+
+let user = null;
+
+if (accessToken && refreshToken) {
+  try {
+    const { data: { user: currentUser }, error } = await supabase.auth.getUser(accessToken);
+
+    if (!error && currentUser) {
+      user = currentUser;
+    } else {
+      // Try to refresh the session
+      const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession({
+        refresh_token: refreshToken
+      });
+
+      if (!refreshError && refreshData.session) {
+        // Update cookies with new tokens
+        Astro.cookies.set('sb-access-token', refreshData.session.access_token, {
+          path: '/',
+          maxAge: 60 * 60 * 24 * 7,
+          httpOnly: true,
+          secure: import.meta.env.PROD,
+          sameSite: 'lax'
+        });
+
+        Astro.cookies.set('sb-refresh-token', refreshData.session.refresh_token, {
+          path: '/',
+          maxAge: 60 * 60 * 24 * 7,
+          httpOnly: true,
+          secure: import.meta.env.PROD,
+          sameSite: 'lax'
+        });
+
+        user = refreshData.user;
+      } else {
+        // Clear invalid cookies
+        Astro.cookies.delete('sb-access-token', { path: '/' });
+        Astro.cookies.delete('sb-refresh-token', { path: '/' });
+      }
+    }
+  } catch (error) {
+    console.error('Auth check error in Layout:', error);
+    // Clear cookies on error
+    Astro.cookies.delete('sb-access-token', { path: '/' });
+    Astro.cookies.delete('sb-refresh-token', { path: '/' });
+  }
+}
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="es">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+        <title>Adoptables México | Conectamos a lomitos y michis con su hogar ideal.</title>
+        <meta name="description" content="Discover loving pets waiting for their forever homes. Browse adoptable dogs, cats, and more in a friendly, easy-to-use platform.">
+        <meta name="keywords" content="adoptables, mexico, adopcion de mascotas, perros, gatos, encontrar hogar, animales en adopcion, lomitos, michis, adopta un amigo, plataforma de adopcion">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 	</head>
-	<body>
-		<slot />
-	</body>
+  <body>
+    <div class="min-h-screen text-foreground font-quicksand antialiased bg-gradient-to-b from-background to-accent/20">
+        <Navbar user={user} />
+        <slot />
+        <Footer />
+    </div>
+  </body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

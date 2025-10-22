@@ -1,0 +1,74 @@
+---
+const blogPosts = [
+  {
+    id: 1,
+    slug: "how-to-prepare-your-home-for-a-new-pet",
+    title: "How to Prepare Your Home for a New Pet",
+    excerpt: "Essential tips and checklist for welcoming your new furry friend into your home.",
+    date: "May 15, 2024",
+    image: "https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=800&h=600&fit=crop",
+  },
+  {
+    id: 2,
+    slug: "understanding-pet-adoption-process",
+    title: "Understanding Pet Adoption Process",
+    excerpt: "A step-by-step guide to help you navigate the pet adoption journey with confidence.",
+    date: "May 10, 2024",
+    image: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800&h=600&fit=crop",
+  },
+  {
+    id: 3,
+    slug: "best-practices-for-pet-care",
+    title: "Best Practices for Pet Care",
+    excerpt: "Expert advice on nutrition, exercise, and healthcare for your beloved companion.",
+    date: "May 5, 2024",
+    image: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800&h=600&fit=crop",
+  },
+];
+---
+<section class="py-20">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl md:text-5xl font-bold mb-4">Últimos Artículos</h2>
+      <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+        Tips, historias, y guías para ayudarte con tu proceso de adopción
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {blogPosts.map((post) => (
+        <article class="flex flex-col overflow-hidden border-2 hover:border-primary transition-all duration-300 hover:shadow-lg rounded-3xl group bg-card">
+          <div class="relative overflow-hidden aspect-[4/3]">
+            <img
+              src={post.image}
+              alt={post.title}
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              loading="lazy"
+              decoding="async"
+              onerror="this.onerror=null;this.src='/fallbacks/post-placeholder.jpg'"
+            />
+          </div>
+          <div class="p-6 space-y-3 flex-grow">
+            <div class="flex items-center gap-2 text-sm text-muted-foreground">
+              <!-- Calendar icon -->
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+              <span>{post.date}</span>
+            </div>
+            <h3 class="text-xl font-bold">{post.title}</h3>
+            <p class="text-muted-foreground">{post.excerpt}</p>
+          </div>
+          <div class="p-6 pt-0 mt-auto">
+            <a href={`/blog/${post.slug}`} class="rounded-full w-full inline-flex items-center justify-center h-11 px-6 border-2 border-input hover:shadow-sm">
+              Leer Más
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

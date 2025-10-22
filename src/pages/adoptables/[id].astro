@@ -1,0 +1,201 @@
+---
+// src/pages/pets/[id].astro
+// Assumes the pet data will be provided by an Astro Action / server loader.
+// While you wire Supabase, this file also includes a tiny local fallback `petsData`.
+
+export const prerender = false;
+
+import Layout from "@/layouts/Layout.astro";
+import PetGallery from "@/components/PetGallery.astro"; // ensure you have the Astro version
+
+import petDog1 from "@/assets/pet-dog-1.jpg";
+import petCat1 from "@/assets/pet-cat-1.jpg";
+import petDog2 from "@/assets/pet-dog-2.jpg";
+import petCat2 from "@/assets/pet-cat-2.jpg";
+
+import { actions } from 'astro:actions';
+
+
+// Fallback mock (remove once you fetch from Supabase)
+const petsData: Record<string, any> = {
+  "1": {
+    name: "Buddy",
+    images: [petDog1, petDog2, petDog1],
+    age: "2 añosa",
+    breed: "Golden Retriever",
+    location: "El Pueblito, Corregidora",
+    type: "dog",
+    size: "Grande",
+    gender: "Macho",
+    color: "Café dorado",
+    bio: "Meet Buddy, an energetic and loving Golden Retriever who's always ready for an adventure! Buddy loves playing fetch, going on long walks, and cuddling on the couch. He's great with kids and other dogs, making him the perfect family companion. Buddy is fully vaccinated, neutered, and house-trained. He knows basic commands and is eager to learn more. His favorite things include swimming, car rides, and treats (of course!). Buddy is looking for an active family who can give him lots of love and attention.",
+  },
+};
+
+// URL param
+const { id } = Astro.params;
+
+// TODO: Replace with your Action call (e.g., const pet = await getPetById(id))
+const pet = id ? petsData[id] : null;
+const petDB = await Astro.callAction(actions.get_pet_by_slug, { slug: 'max'}); // Example Action call
+console.log(petDB);
+---
+
+<Layout>
+    <div>
+    {pet ? (
+        <main class="py-8">
+        <div class="container mx-auto px-4">
+            <a href="/adoptables" class="inline-flex items-center gap-2 text-muted-foreground hover:text-primary mb-8 transition-colors">
+            <!-- ArrowLeft icon -->
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            <span class="font-medium">Regresa al listado</span>
+            </a>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <PetGallery images={pet.images} petName={pet.name} />
+
+            <div class="space-y-6">
+                <div>
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                    <h1 class="text-4xl md:text-5xl text-muted-foreground mb-2">Hola, soy <span class="text-primary font-bold">{pet.name}</span></h1>
+                    <p class="text-xl text-muted-foreground">{pet.breed}</p>
+                    </div>
+                    <button
+                    id="share-btn"
+                    type="button"
+                    class="rounded-full w-12 h-12 border-2 border-input inline-flex items-center justify-center hover:shadow-md transition"
+                    aria-label="Share pet link"
+                    >
+                    <!-- Share2 icon -->
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="18" cy="5" r="3"/>
+                        <circle cx="6" cy="12" r="3"/>
+                        <circle cx="18" cy="19" r="3"/>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                    </svg>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2 text-muted-foreground mb-4">
+                    <!-- MapPin icon -->
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 1 1 18 0Z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span class="text-lg">{pet.location}</span>
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                    <span class="rounded-full px-4 py-2 text-base bg-primary text-primary-foreground">{pet.type === 'dog' ? '🐶 Dog' : '🐱 Cat'}</span>
+                    <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.age}</span>
+                    <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.gender}</span>
+                    <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.size}</span>
+                </div>
+                </div>
+
+                <div class="border-2 rounded-3xl">
+                <div class="p-6 space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-muted-foreground mb-1">Edad</p>
+                        <p class="font-semibold text-lg">{pet.age}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted-foreground mb-1">Talla</p>
+                        <p class="font-semibold text-lg">{pet.size}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted-foreground mb-1">Color</p>
+                        <p class="font-semibold text-lg">{pet.color}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted-foreground mb-1">Género</p>
+                        <p class="font-semibold text-lg">{pet.gender}</p>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <button
+                id="apply-btn"
+                type="button"
+                class="w-full rounded-full text-lg h-14 shadow-lg hover:shadow-xl hover:cursor-pointer transition-shadow bg-primary text-primary-foreground"
+                >
+                    Quiero adoptar a {pet.name}
+                </button>
+                <p id="share-status" class="sr-only" role="status">Link ready to copy</p>
+            </div>
+            </div>
+
+            <div class="border-2 rounded-3xl mb-8">
+            <div class="p-8">
+                <h2 class="text-3xl font-bold mb-4">Mi historia</h2>
+                <p class="text-lg text-muted-foreground leading-relaxed">{pet.bio}</p>
+            </div>
+            </div>
+            </div>
+
+            <!-- Lightweight modal using <dialog>; replace with your own AuthModal.astro if preferred -->
+            <dialog id="auth-modal" class="rounded-2xl p-0 w-[95vw] max-w-md">
+                <form method="dialog">
+                <div class="p-6 space-y-4 bg-card text-foreground rounded-2xl border">
+                    <div class="flex items-start justify-between">
+                    <h3 class="text-xl font-semibold">Sign in to continue</h3>
+                    <button class="p-2" aria-label="Close">✕</button>
+                    </div>
+                    <p class="text-sm text-muted-foreground">Create an account or sign in to apply for {pet.name}'s adoption.</p>
+                    <div class="grid gap-3">
+                    <input class="h-11 rounded-lg border border-input px-3 bg-background" type="email" required placeholder="Email" />
+                    <input class="h-11 rounded-lg border border-input px-3 bg-background" type="password" required placeholder="Password" />
+                    </div>
+                    <button class="w-full h-12 rounded-full bg-primary text-primary-foreground">Continue</button>
+                </div>
+                </form>
+            </dialog>
+        </main>
+    ) : (
+        <main class="py-8">
+            <div class="container mx-auto px-4 py-20 text-center">
+                <h1 class="text-4xl font-bold mb-4">Adoptable No Encontrado</h1>
+                <a href="/adoptables" class="inline-flex items-center justify-center rounded-full h-12 px-6 bg-primary text-primary-foreground">Regresa al listado</a>
+            </div>
+        </main>
+    )}
+    </div>
+</Layout>
+
+<script is:inline>
+  // Share button: copy URL to clipboard and provide a simple a11y status update
+  const shareBtn = document.getElementById('share-btn');
+  const shareStatus = document.getElementById('share-status');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        if (shareStatus) {
+          shareStatus.textContent = 'Link copied to clipboard!';
+          shareStatus.classList.remove('sr-only');
+          setTimeout(() => shareStatus.classList.add('sr-only'), 1500);
+        }
+      } catch (e) {
+        if (shareStatus) {
+          shareStatus.textContent = 'Unable to copy link';
+          shareStatus.classList.remove('sr-only');
+          setTimeout(() => shareStatus.classList.add('sr-only'), 1500);
+        }
+      }
+    });
+  }
+
+  // Apply button opens the <dialog> modal
+  const applyBtn = document.getElementById('apply-btn');
+  const modal = document.getElementById('auth-modal');
+  if (applyBtn && modal && typeof modal.showModal === 'function') {
+    applyBtn.addEventListener('click', () => modal.showModal());
+  }
+</script>

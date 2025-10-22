@@ -1,0 +1,17 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+import Header from "@/sections/Header.astro"
+import PublishForm from "@/components/PublishForm.astro"
+import Footer from "@/sections/Footer.astro"
+---
+
+<Layout>
+  <div class="flex min-h-screen flex-col">
+    <Header />
+    <div class="flex flex-1">
+      <PublishForm />
+    </div>
+    <Footer />
+  </div>
+</Layout>
