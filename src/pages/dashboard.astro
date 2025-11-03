@@ -3,31 +3,37 @@ import Layout from "@/layouts/Layout.astro";
 import { supabase } from "@/lib/supabase";
 import { getUserProfileWithOrganization } from "@/services/auth";
 
-// Check if user is authenticated
-const accessToken = Astro.cookies.get('sb-access-token')?.value;
-const refreshToken = Astro.cookies.get('sb-refresh-token')?.value;
+const user = Astro.locals.user;
 
-if (!accessToken || !refreshToken) {
-  return Astro.redirect('/login');
+if (!user) {
+	return Astro.redirect("/login");
 }
+
+// Check if user is authenticated
+//const accessToken = Astro.cookies.get('sb-access-token')?.value;
+//const refreshToken = Astro.cookies.get('sb-refresh-token')?.value;
+
+//if (!accessToken || !refreshToken) {
+//  return Astro.redirect('/login');
+//}
 
 // Verify the session
-const { data: { user }, error } = await supabase.auth.getUser(accessToken);
+// const { data: { user }, error } = await supabase.auth.getUser(accessToken);
 
-if (error || !user) {
-  // Clear invalid cookies
-  Astro.cookies.delete('sb-access-token', { path: '/' });
-  Astro.cookies.delete('sb-refresh-token', { path: '/' });
-  return Astro.redirect('/login');
-}
+// if (error || !user) {
+//   // Clear invalid cookies
+//   Astro.cookies.delete('sb-access-token', { path: '/' });
+//   Astro.cookies.delete('sb-refresh-token', { path: '/' });
+//   return Astro.redirect('/login');
+// }
 
 // Get user profile with organization info
 let userProfile;
 try {
-  userProfile = await getUserProfileWithOrganization(user.id);
+	userProfile = await getUserProfileWithOrganization(user.id);
 } catch (err) {
-  console.error('Error fetching user profile:', err);
-  userProfile = null;
+	console.error("Error fetching user profile:", err);
+	userProfile = null;
 }
 
 const organization = userProfile?.user_organizations?.[0]?.organizations;
@@ -35,169 +41,326 @@ const userRole = userProfile?.user_organizations?.[0]?.role;
 ---
 
 <Layout>
-  <div class="min-h-screen bg-gray-50">
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-      <div class="px-4 py-6 sm:px-0">
-        <!-- Welcome Header -->
-        <div class="bg-white shadow rounded-lg mb-8">
-          <div class="px-4 py-5 sm:p-6">
-            <h1 class="text-2xl font-bold text-gray-900">¡Bienvenido a tu Dashboard!</h1>
-            <p class="mt-2 text-sm text-gray-600">
-              Has iniciado sesión exitosamente en AdoptablesMX. Aquí podrás administrar tu cuenta y explorar mascotas adoptables.
-            </p>
-          </div>
-        </div>
+	<div class="min-h-screen bg-gray-50">
+		<!-- Main Content -->
+		<main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+			<div class="px-4 py-6 sm:px-0">
+				<!-- Welcome Header -->
+				<div class="bg-white shadow rounded-lg mb-8">
+					<div class="px-4 py-5 sm:p-6">
+						<h1 class="text-2xl font-bold text-gray-900">
+							¡Bienvenido a tu Dashboard!
+						</h1>
+						<p class="mt-2 text-sm text-gray-600">
+							Has iniciado sesión exitosamente en AdoptablesMX.
+							Aquí podrás administrar tu cuenta y explorar
+							mascotas adoptables.
+						</p>
+					</div>
+				</div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <!-- User Info Card -->
-          <div class="lg:col-span-2">
-            <div class="bg-white shadow rounded-lg">
-              <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">Información de la Cuenta</h3>
-                <div class="mt-2 max-w-xl text-sm text-gray-500">
-                  <p>Detalles de tu cuenta y estado de autenticación.</p>
-                </div>
-                <div class="mt-5">
-                  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                    <div>
-                      <dt class="text-sm font-medium text-gray-500">Nombre Completo</dt>
-                      <dd class="mt-1 text-sm text-gray-900">{userProfile?.name || 'No especificado'}</dd>
-                    </div>
-                    <div>
-                      <dt class="text-sm font-medium text-gray-500">Correo Electrónico</dt>
-                      <dd class="mt-1 text-sm text-gray-900">{user.email}</dd>
-                    </div>
-                    <div>
-                      <dt class="text-sm font-medium text-gray-500">Teléfono</dt>
-                      <dd class="mt-1 text-sm text-gray-900">{userProfile?.phone || 'No especificado'}</dd>
-                    </div>
-                    <div>
-                      <dt class="text-sm font-medium text-gray-500">Email Confirmado</dt>
-                      <dd class="mt-1 text-sm text-gray-900">
-                        <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          user.email_confirmed_at
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {user.email_confirmed_at ? '✓ Confirmado' : '⏳ Pendiente'}
-                        </span>
-                      </dd>
-                    </div>
-                    <div>
-                      <dt class="text-sm font-medium text-gray-500">Cuenta Creada</dt>
-                      <dd class="mt-1 text-sm text-gray-900">
-                        {new Date(user.created_at).toLocaleDateString('es-MX', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt class="text-sm font-medium text-gray-500">ID de Usuario</dt>
-                      <dd class="mt-1 text-xs text-gray-900 font-mono">{user.id.substring(0, 8)}...</dd>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+				<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+					<!-- User Info Card -->
+					<div class="lg:col-span-2">
+						<div class="bg-white shadow rounded-lg">
+							<div class="px-4 py-5 sm:p-6">
+								<h3
+									class="text-lg leading-6 font-medium text-gray-900"
+								>
+									Información de la Cuenta
+								</h3>
+								<div
+									class="mt-2 max-w-xl text-sm text-gray-500"
+								>
+									<p>
+										Detalles de tu cuenta y estado de
+										autenticación.
+									</p>
+								</div>
+								<div class="mt-5">
+									<div
+										class="grid grid-cols-1 gap-5 sm:grid-cols-2"
+									>
+										<div>
+											<dt
+												class="text-sm font-medium text-gray-500"
+											>
+												Nombre Completo
+											</dt>
+											<dd
+												class="mt-1 text-sm text-gray-900"
+											>
+												{
+													userProfile?.name ||
+														"No especificado"
+												}
+											</dd>
+										</div>
+										<div>
+											<dt
+												class="text-sm font-medium text-gray-500"
+											>
+												Correo Electrónico
+											</dt>
+											<dd
+												class="mt-1 text-sm text-gray-900"
+											>
+												{user.email}
+											</dd>
+										</div>
+										<div>
+											<dt
+												class="text-sm font-medium text-gray-500"
+											>
+												Teléfono
+											</dt>
+											<dd
+												class="mt-1 text-sm text-gray-900"
+											>
+												{
+													userProfile?.phone ||
+														"No especificado"
+												}
+											</dd>
+										</div>
+										<div>
+											<dt
+												class="text-sm font-medium text-gray-500"
+											>
+												Email Confirmado
+											</dt>
+											<dd
+												class="mt-1 text-sm text-gray-900"
+											>
+												<span
+													class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+														user.email_confirmed_at
+															? "bg-green-100 text-green-800"
+															: "bg-yellow-100 text-yellow-800"
+													}`}
+												>
+													{
+														user.email_confirmed_at
+															? "✓ Confirmado"
+															: "⏳ Pendiente"
+													}
+												</span>
+											</dd>
+										</div>
+										<div>
+											<dt
+												class="text-sm font-medium text-gray-500"
+											>
+												Cuenta Creada
+											</dt>
+											<dd
+												class="mt-1 text-sm text-gray-900"
+											>
+												{
+													new Date(
+														user.created_at,
+													).toLocaleDateString(
+														"es-MX",
+														{
+															year: "numeric",
+															month: "long",
+															day: "numeric",
+														},
+													)
+												}
+											</dd>
+										</div>
+										<div>
+											<dt
+												class="text-sm font-medium text-gray-500"
+											>
+												ID de Usuario
+											</dt>
+											<dd
+												class="mt-1 text-xs text-gray-900 font-mono"
+											>
+												{user.id.substring(0, 8)}...
+											</dd>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
 
-            <!-- Organization Info -->
-            {organization && (
-              <div class="mt-8 bg-white shadow rounded-lg">
-                <div class="px-4 py-5 sm:p-6">
-                  <h3 class="text-lg leading-6 font-medium text-gray-900">Información de la Organización</h3>
-                  <div class="mt-2 max-w-xl text-sm text-gray-500">
-                    <p>Tu organización y rol dentro de la plataforma.</p>
-                  </div>
-                  <div class="mt-5">
-                    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                      <div>
-                        <dt class="text-sm font-medium text-gray-500">Nombre</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{organization.name}</dd>
-                      </div>
-                      <div>
-                        <dt class="text-sm font-medium text-gray-500">Tipo</dt>
-                        <dd class="mt-1 text-sm text-gray-900">
-                          <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            organization.type === 'personal'
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-purple-100 text-purple-800'
-                          }`}>
-                            {organization.type === 'personal' ? '👤 Personal' : '🏢 Organización'}
-                          </span>
-                        </dd>
-                      </div>
-                      <div>
-                        <dt class="text-sm font-medium text-gray-500">Tu Rol</dt>
-                        <dd class="mt-1 text-sm text-gray-900">
-                          <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            userRole === 'owner'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : userRole === 'admin'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
-                          }`}>
-                            {userRole === 'owner' ? '👑 Propietario' :
-                             userRole === 'admin' ? '⚡ Administrador' :
-                             '🤝 Miembro'}
-                          </span>
-                        </dd>
-                      </div>
-                      <div>
-                        <dt class="text-sm font-medium text-gray-500">URL</dt>
-                        <dd class="mt-1 text-sm text-gray-900">
-                          <a href={`/org/${organization.slug}`} class="text-indigo-600 hover:text-indigo-500">
-                            /org/{organization.slug}
-                          </a>
-                        </dd>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+						<!-- Organization Info -->
+						{
+							organization && (
+								<div class="mt-8 bg-white shadow rounded-lg">
+									<div class="px-4 py-5 sm:p-6">
+										<h3 class="text-lg leading-6 font-medium text-gray-900">
+											Información de la Organización
+										</h3>
+										<div class="mt-2 max-w-xl text-sm text-gray-500">
+											<p>
+												Tu organización y rol dentro de
+												la plataforma.
+											</p>
+										</div>
+										<div class="mt-5">
+											<div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+												<div>
+													<dt class="text-sm font-medium text-gray-500">
+														Nombre
+													</dt>
+													<dd class="mt-1 text-sm text-gray-900">
+														{organization.name}
+													</dd>
+												</div>
+												<div>
+													<dt class="text-sm font-medium text-gray-500">
+														Tipo
+													</dt>
+													<dd class="mt-1 text-sm text-gray-900">
+														<span
+															class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+																organization.type ===
+																"personal"
+																	? "bg-blue-100 text-blue-800"
+																	: "bg-purple-100 text-purple-800"
+															}`}
+														>
+															{organization.type ===
+															"personal"
+																? "👤 Personal"
+																: "🏢 Organización"}
+														</span>
+													</dd>
+												</div>
+												<div>
+													<dt class="text-sm font-medium text-gray-500">
+														Tu Rol
+													</dt>
+													<dd class="mt-1 text-sm text-gray-900">
+														<span
+															class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+																userRole ===
+																"owner"
+																	? "bg-yellow-100 text-yellow-800"
+																	: userRole ===
+																		  "admin"
+																		? "bg-green-100 text-green-800"
+																		: "bg-gray-100 text-gray-800"
+															}`}
+														>
+															{userRole ===
+															"owner"
+																? "👑 Propietario"
+																: userRole ===
+																	  "admin"
+																	? "⚡ Administrador"
+																	: "🤝 Miembro"}
+														</span>
+													</dd>
+												</div>
+												<div>
+													<dt class="text-sm font-medium text-gray-500">
+														URL
+													</dt>
+													<dd class="mt-1 text-sm text-gray-900">
+														<a
+															href={`/org/${organization.slug}`}
+															class="text-indigo-600 hover:text-indigo-500"
+														>
+															/org/
+															{organization.slug}
+														</a>
+													</dd>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							)
+						}
 
-            <!-- Recent Activity / Stats -->
-            <div class="mt-8 bg-white shadow rounded-lg">
-              <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">Estadísticas</h3>
-                <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-                  <div class="bg-gray-50 p-4 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-indigo-600">0</div>
-                    <div class="text-sm text-gray-500">Favoritos</div>
-                  </div>
-                  <div class="bg-gray-50 p-4 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-green-600">0</div>
-                    <div class="text-sm text-gray-500">Aplicaciones</div>
-                  </div>
-                  <div class="bg-gray-50 p-4 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-purple-600">0</div>
-                    <div class="text-sm text-gray-500">Visitas</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+						<!-- Recent Activity / Stats -->
+						<div class="mt-8 bg-white shadow rounded-lg">
+							<div class="px-4 py-5 sm:p-6">
+								<h3
+									class="text-lg leading-6 font-medium text-gray-900"
+								>
+									Estadísticas
+								</h3>
+								<div
+									class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3"
+								>
+									<div
+										class="bg-gray-50 p-4 rounded-lg text-center"
+									>
+										<div
+											class="text-2xl font-bold text-indigo-600"
+										>
+											0
+										</div>
+										<div class="text-sm text-gray-500">
+											Favoritos
+										</div>
+									</div>
+									<div
+										class="bg-gray-50 p-4 rounded-lg text-center"
+									>
+										<div
+											class="text-2xl font-bold text-green-600"
+										>
+											0
+										</div>
+										<div class="text-sm text-gray-500">
+											Aplicaciones
+										</div>
+									</div>
+									<div
+										class="bg-gray-50 p-4 rounded-lg text-center"
+									>
+										<div
+											class="text-2xl font-bold text-purple-600"
+										>
+											0
+										</div>
+										<div class="text-sm text-gray-500">
+											Visitas
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 
-          <!-- Quick Actions Sidebar -->
-          <div class="lg:col-span-1">
-            <div class="bg-white shadow rounded-lg">
-              <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Acciones Rápidas</h3>
-                <div class="space-y-4">
-                    <a
-                      href="/publicar-adoptable"
-                      class="w-full bg-pink-600 hover:bg-pink-700 text-white px-4 py-3 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-colors"
-                    >
-                      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                      </svg>
-                      Publicar Adoptable
-                    </a>
+					<!-- Quick Actions Sidebar -->
+					<div class="lg:col-span-1">
+						<div class="bg-white shadow rounded-lg">
+							<div class="px-4 py-5 sm:p-6">
+								<h3
+									class="text-lg leading-6 font-medium text-gray-900 mb-4"
+								>
+									Acciones Rápidas
+								</h3>
+								<div class="space-y-4">
+									<a
+										href="/publicar-adoptable"
+										class="w-full bg-pink-600 hover:bg-pink-700 text-white px-4 py-3 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-colors"
+									>
+										<svg
+											class="w-5 h-5"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="currentColor"
+										>
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+											></path>
+										</svg>
+										Publicar Adoptable
+									</a>
 
-                  <!-- <a
+									<!-- <a
                     href="/adoptables"
                     class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-colors"
                   >
@@ -207,47 +370,74 @@ const userRole = userProfile?.user_organizations?.[0]?.role;
                     Explorar Mascotas
                   </a> -->
 
-                  <a
-                    href="/profile"
-                    class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-colors"
-                  >
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    Editar Perfil
-                  </a>
+									<a
+										href="/profile"
+										class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-colors"
+									>
+										<svg
+											class="w-5 h-5"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="currentColor"
+										>
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+											></path>
+										</svg>
+										Editar Perfil
+									</a>
 
-                  <a
-                    href="/applications"
-                    class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-colors"
-                  >
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Mis Aplicaciones
-                  </a>
-                </div>
-              </div>
-            </div>
+									<a
+										href="/applications"
+										class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-colors"
+									>
+										<svg
+											class="w-5 h-5"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="currentColor"
+										>
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+											></path>
+										</svg>
+										Mis Aplicaciones
+									</a>
+								</div>
+							</div>
+						</div>
 
-            <!-- Tips Card -->
-            <div class="mt-6 bg-blue-50 shadow rounded-lg">
-              <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-blue-900 mb-2">💡 Consejo</h3>
-                <p class="text-sm text-blue-800">
-                  ¡Completa tu perfil para mejorar tus posibilidades de adopción! Las organizaciones prefieren adoptantes con perfiles completos.
-                </p>
-                <a
-                  href="/profile"
-                  class="mt-3 text-sm font-medium text-blue-600 hover:text-blue-500"
-                >
-                  Completar perfil →
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
+						<!-- Tips Card -->
+						<div class="mt-6 bg-blue-50 shadow rounded-lg">
+							<div class="px-4 py-5 sm:p-6">
+								<h3
+									class="text-lg leading-6 font-medium text-blue-900 mb-2"
+								>
+									💡 Consejo
+								</h3>
+								<p class="text-sm text-blue-800">
+									¡Completa tu perfil para mejorar tus
+									posibilidades de adopción! Las
+									organizaciones prefieren adoptantes con
+									perfiles completos.
+								</p>
+								<a
+									href="/profile"
+									class="mt-3 text-sm font-medium text-blue-600 hover:text-blue-500"
+								>
+									Completar perfil →
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+	</div>
 </Layout>

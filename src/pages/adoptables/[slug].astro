@@ -33,12 +33,14 @@ const petsData: Record<string, any> = {
 };
 
 // URL param
-const { id } = Astro.params;
+const { slug } = Astro.params;
 
 // TODO: Replace with your Action call (e.g., const pet = await getPetById(id))
-const pet = id ? petsData[id] : null;
-const petDB = await Astro.callAction(actions.get_pet_by_slug, { slug: 'max'}); // Example Action call
-console.log(petDB);
+//const pet = id ? petsData[id] : null;
+//const petDB = await Astro.callAction(actions.get_pet_by_slug, { slug: 'max'}); // Example Action call
+const result = await Astro.callAction(actions.get_pet_by_slug, { slug: slug }); // Example Action call
+console.log('res', result);
+const pet = result.data?.pet || null;
 ---
 
 <Layout>
@@ -55,7 +57,7 @@ console.log(petDB);
             </a>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-            <PetGallery images={pet.images} petName={pet.name} />
+            <PetGallery images={pet.pet_images || []} petName={pet.name} />
 
             <div class="space-y-6">
                 <div>
@@ -91,8 +93,8 @@ console.log(petDB);
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    <span class="rounded-full px-4 py-2 text-base bg-primary text-primary-foreground">{pet.type === 'dog' ? '🐶 Dog' : '🐱 Cat'}</span>
-                    <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.age}</span>
+                    <span class="rounded-full px-4 py-2 text-base bg-primary text-primary-foreground">{pet.type === 'dog' ? '🐶 Perro' : '🐱 Gato'}</span>
+                    <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.age} años</span>
                     <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.gender}</span>
                     <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.size}</span>
                 </div>
@@ -103,7 +105,7 @@ console.log(petDB);
                     <div class="grid grid-cols-2 gap-4">
                     <div>
                         <p class="text-sm text-muted-foreground mb-1">Edad</p>
-                        <p class="font-semibold text-lg">{pet.age}</p>
+                        <p class="font-semibold text-lg">{pet.age} años</p>
                     </div>
                     <div>
                         <p class="text-sm text-muted-foreground mb-1">Talla</p>

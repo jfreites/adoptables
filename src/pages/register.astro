@@ -71,207 +71,211 @@ const data = result?.data;
       )}
 
       {!isSuccess && (
-        <form method="POST" action={actions.register} class="mt-8 space-y-6" id="registration-form">
-          <!-- Personal Information -->
-          <div class="space-y-4">
-            <h3 class="text-lg font-medium text-gray-900">Información Personal</h3>
+      <section class="border-2 rounded-3xl bg-card text-card-foreground">
+     	<div class="p-6 space-y-4">
+	      	<form method="POST" action={actions.register} class="mt-8 space-y-6" id="registration-form">
+	          <!-- Personal Information -->
+	          <div class="space-y-4">
+	            <h3 class="text-lg font-medium text-gray-900">Información Personal</h3>
 
-            <div>
-              <label for="name" class="block text-sm font-medium text-gray-700">
-                Nombre completo
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                autocomplete="name"
-                required
-                class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Tu nombre completo"
-                value={Astro.url.searchParams.get('name') || ''}
-              />
-            </div>
+	            <div>
+	              <label for="name" class="block text-sm font-medium text-gray-700">
+	                Nombre completo
+	              </label>
+	              <input
+	                id="name"
+	                name="name"
+	                type="text"
+	                autocomplete="name"
+	                required
+	                class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+	                placeholder="Tu nombre completo"
+	                value={Astro.url.searchParams.get('name') || ''}
+	              />
+	            </div>
 
-            <div>
-              <label for="email" class="block text-sm font-medium text-gray-700">
-                Correo electrónico
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autocomplete="email"
-                required
-                class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="tu@email.com"
-                value={Astro.url.searchParams.get('email') || ''}
-              />
-            </div>
+	            <div>
+	              <label for="email" class="block text-sm font-medium text-gray-700">
+	                Correo electrónico
+	              </label>
+	              <input
+	                id="email"
+	                name="email"
+	                type="email"
+	                autocomplete="email"
+	                required
+	                class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+	                placeholder="tu@email.com"
+	                value={Astro.url.searchParams.get('email') || ''}
+	              />
+	            </div>
 
-            <div>
-              <label for="phone" class="block text-sm font-medium text-gray-700">
-                Teléfono de contacto
-              </label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                autocomplete="tel"
-                required
-                class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="5512345678"
-                pattern="[0-9]{10,15}"
-                value={Astro.url.searchParams.get('phone') || ''}
-              />
-              <p class="mt-1 text-sm text-gray-500">Formato: 10-15 dígitos sin espacios ni guiones</p>
-            </div>
-          </div>
+	            <div>
+	              <label for="phone" class="block text-sm font-medium text-gray-700">
+	                Teléfono de contacto
+	              </label>
+	              <input
+	                id="phone"
+	                name="phone"
+	                type="tel"
+	                autocomplete="tel"
+	                required
+	                class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+	                placeholder="5512345678"
+	                pattern="[0-9]{10,15}"
+	                value={Astro.url.searchParams.get('phone') || ''}
+	              />
+	              <p class="mt-1 text-sm text-gray-500">Formato: 10-15 dígitos sin espacios ni guiones</p>
+	            </div>
+	          </div>
 
-          <!-- Password Section -->
-          <div class="space-y-4">
-            <h3 class="text-lg font-medium text-gray-900">Contraseña</h3>
+	          <!-- Password Section -->
+	          <div class="space-y-4">
+	            <h3 class="text-lg font-medium text-gray-900">Contraseña</h3>
 
-            <div>
-              <label for="password" class="block text-sm font-medium text-gray-700">
-                Contraseña
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autocomplete="new-password"
-                required
-                minlength="6"
-                class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Mínimo 6 caracteres"
-              />
-            </div>
+	            <div>
+	              <label for="password" class="block text-sm font-medium text-gray-700">
+	                Contraseña
+	              </label>
+	              <input
+	                id="password"
+	                name="password"
+	                type="password"
+	                autocomplete="new-password"
+	                required
+	                minlength="6"
+	                class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+	                placeholder="Mínimo 6 caracteres"
+	              />
+	            </div>
 
-            <div>
-              <label for="confirm-password" class="block text-sm font-medium text-gray-700">
-                Confirmar contraseña
-              </label>
-              <input
-                id="confirm-password"
-                name="confirm-password"
-                type="password"
-                autocomplete="new-password"
-                required
-                minlength="6"
-                class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Repite tu contraseña"
-              />
-            </div>
-          </div>
+	            <div>
+	              <label for="confirm-password" class="block text-sm font-medium text-gray-700">
+	                Confirmar contraseña
+	              </label>
+	              <input
+	                id="confirm-password"
+	                name="confirm-password"
+	                type="password"
+	                autocomplete="new-password"
+	                required
+	                minlength="6"
+	                class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+	                placeholder="Repite tu contraseña"
+	              />
+	            </div>
+	          </div>
 
-          <!-- Organization Section -->
-          <div class="space-y-4">
-            <h3 class="text-lg font-medium text-gray-900">Tipo de Organización</h3>
+	          <!-- Organization Section -->
+	          <div class="space-y-4">
+	            <h3 class="text-lg font-medium text-gray-900">Tipo de Organización</h3>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-3">
-                ¿Cómo te registras en la plataforma?
-              </label>
+	            <div>
+	              <label class="block text-sm font-medium text-gray-700 mb-3">
+	                ¿Cómo te registras en la plataforma?
+	              </label>
 
-              <div class="space-y-2">
-                <div class="flex items-center">
-                  <input
-                    id="org-personal"
-                    name="orgType"
-                    type="radio"
-                    value="personal"
-                    required
-                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                    checked
-                  />
-                  <label for="org-personal" class="ml-2 block text-sm text-gray-900">
-                    <span class="font-medium">Personal</span>
-                    <span class="text-gray-500 block">Soy una persona individual que rescata/cuida mascotas</span>
-                  </label>
-                </div>
+	              <div class="space-y-2">
+	                <div class="flex items-center">
+	                  <input
+	                    id="org-personal"
+	                    name="orgType"
+	                    type="radio"
+	                    value="personal"
+	                    required
+	                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+	                    checked
+	                  />
+	                  <label for="org-personal" class="ml-2 block text-sm text-gray-900">
+	                    <span class="font-medium">Personal</span>
+	                    <span class="text-gray-500 block">Soy una persona individual que rescata/cuida mascotas</span>
+	                  </label>
+	                </div>
 
-                <div class="flex items-center">
-                  <input
-                    id="org-association"
-                    name="orgType"
-                    type="radio"
-                    value="association"
-                    required
-                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                  />
-                  <label for="org-association" class="ml-2 block text-sm text-gray-900">
-                    <span class="font-medium">Organización/Asociación</span>
-                    <span class="text-gray-500 block">Pertenezco a una fundación, refugio, asociación, etc.</span>
-                  </label>
-                </div>
-              </div>
-            </div>
+	                <div class="flex items-center">
+	                  <input
+	                    id="org-association"
+	                    name="orgType"
+	                    type="radio"
+	                    value="association"
+	                    required
+	                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+	                  />
+	                  <label for="org-association" class="ml-2 block text-sm text-gray-900">
+	                    <span class="font-medium">Organización/Asociación</span>
+	                    <span class="text-gray-500 block">Pertenezco a una fundación, refugio, asociación, etc.</span>
+	                  </label>
+	                </div>
+	              </div>
+	            </div>
 
-            <!-- Organization Fields (hidden by default) -->
-            <div id="association-fields" class="space-y-4 hidden">
-              <div>
-                <label for="orgName" class="block text-sm font-medium text-gray-700">
-                  Nombre de la organización
-                </label>
-                <input
-                  id="orgName"
-                  name="orgName"
-                  type="text"
-                  class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Ej: Fundación Amor Animal A.C."
-                />
-              </div>
+	            <!-- Organization Fields (hidden by default) -->
+	            <div id="association-fields" class="space-y-4 hidden">
+	              <div>
+	                <label for="orgName" class="block text-sm font-medium text-gray-700">
+	                  Nombre de la organización
+	                </label>
+	                <input
+	                  id="orgName"
+	                  name="orgName"
+	                  type="text"
+	                  class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+	                  placeholder="Ej: Fundación Amor Animal A.C."
+	                />
+	              </div>
 
-              <div>
-                <label for="orgRole" class="block text-sm font-medium text-gray-700">
-                  Tu rol en la organización
-                </label>
-                <select
-                  id="orgRole"
-                  name="orgRole"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                >
-                  <option value="">Selecciona tu rol</option>
-                  <option value="owner">Fundador/Propietario</option>
-                  <option value="admin">Administrador</option>
-                  <option value="member">Miembro/Voluntario</option>
-                </select>
-              </div>
-            </div>
-          </div>
+	              <div>
+	                <label for="orgRole" class="block text-sm font-medium text-gray-700">
+	                  Tu rol en la organización
+	                </label>
+	                <select
+	                  id="orgRole"
+	                  name="orgRole"
+	                  class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+	                >
+	                  <option value="">Selecciona tu rol</option>
+	                  <option value="owner">Fundador/Propietario</option>
+	                  <option value="admin">Administrador</option>
+	                  <option value="member">Miembro/Voluntario</option>
+	                </select>
+	              </div>
+	            </div>
+	          </div>
 
-          <!-- Terms -->
-          <div class="text-sm text-gray-600">
-            <p>Al crear una cuenta, aceptas nuestros Términos de Servicio y Política de Privacidad.</p>
-          </div>
+	          <!-- Terms -->
+	          <div class="text-sm text-gray-600">
+	            <p>Al crear una cuenta, aceptas nuestros Términos de Servicio y Política de Privacidad.</p>
+	          </div>
 
-          <!-- Submit Button -->
-          <div>
-            <button
-              type="submit"
-              id="register-btn"
-              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                <svg
-                  class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span data-text="default">Crear cuenta</span>
-              <span data-text="loading" class="hidden">Creando cuenta...</span>
-            </button>
-          </div>
-        </form>
+	          <!-- Submit Button -->
+	          <div>
+	            <button
+	              type="submit"
+	              id="register-btn"
+	              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+	            >
+	              <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+	                <svg
+	                  class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
+	                  xmlns="http://www.w3.org/2000/svg"
+	                  viewBox="0 0 20 20"
+	                  fill="currentColor"
+	                  aria-hidden="true"
+	                >
+	                  <path
+	                    fill-rule="evenodd"
+	                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+	                    clip-rule="evenodd"
+	                  />
+	                </svg>
+	              </span>
+	              <span data-text="default">Crear cuenta</span>
+	              <span data-text="loading" class="hidden">Creando cuenta...</span>
+	            </button>
+	          </div>
+	        </form>
+	      </div>
+      </section>
       )}
     </div>
   </div>

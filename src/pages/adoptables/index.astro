@@ -5,7 +5,7 @@ import PetCard from "@/components/PetCard.astro";
 import Layout from "@/layouts/Layout.astro";
 import { getPets } from "@/services/pets";
 
-const PETS_PER_PAGE = 6;
+const PETS_PER_PAGE = 9;
 const url = new URL(Astro.request.url);
 const currentPageParam = Number(url.searchParams.get("page") ?? "1");
 
@@ -20,7 +20,7 @@ const pageHref = (p: number) => `?page=${p}`;
   <section class="py-12">
     <div class="container mx-auto px-4">
       <div class="text-center mb-12">
-        <h1 class="text-4xl md:text-6xl font-bold mb-4">Encuentra Tu Nuevo <span class="text-primary">Mejor Amigo</span></h1>
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">Encuentra al nuevo <span class="text-primary">Miembro Familiar</span></h1>
         <p class="text-xl text-muted-foreground max-w-4xl mx-auto">
           Busca en nuestro listado de adoptables y encuentra el compañero perfecto para tu familia.
         </p>

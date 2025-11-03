@@ -1,28 +1,181 @@
 ---
+import PetCard from "@/components/PetCard.astro";
 import Layout from "@/layouts/Layout.astro";
+import { getOrganizationBySlug } from "@/services/auth";
+import { getPetsByOrg } from "@/services/pets";
+
+// Para compilaciones y tiempos de carga más rápidos, puedes importar iconos directamente desde el @lucide/astro/iconsdirectorio:
+//import CircleAlert from '@lucide/astro/icons/circle-alert';
+// Ej: <CircleAlert color="#ff3e98" />
 
 const { slug } = Astro.params;
 //const url = new URL(Astro.request.url);
-//console.log(slug, url)
 // fetch all data for the org: basic info and pets available for adoption
+let orgData = null;
+try {
+	const data = await getOrganizationBySlug(slug || "");
+	orgData = data;
+} catch (err) {
+	console.error("Error fetching org info:", err);
+}
+
+if (!orgData) {
+	throw new Error("Organization not found");
+}
+
+const { pets: petList, success, error } = await getPetsByOrg(orgData.id);
 ---
+
 <Layout>
-    <div class="container mx-auto px-4 py-12">
-        <div class="p-4 rounded-lg bg-card/80 text-foreground mt-6 flex flex-col md:flex-row gap-4">
-            <img src="https://picsum.photos/200" alt="" class="rounded-lg w-32 h-fit border-2 border-primary">
+	<div class="container mx-auto px-4 py-12">
+		<div
+			class="p-4 rounded-lg bg-card/80 text-foreground mt-6 flex flex-col md:flex-row gap-4"
+		>
+			<img
+				src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+					orgData.name,
+				)}&background=0D8ABC&color=fff&size=128`}
+				alt="Avatar de {orgData.name}"
+				class="rounded-lg w-32 h-fit border-2 border-primary mx-auto"
+			/>
 
-            <div>
-                <h2>Información de la organización</h2>
-                <p class="text-muted-foreground">https://adoptables.mx/org/{slug}</p>
-                <p>facebook url</p>
-                <p>instagram url</p>
-                <p>website url</p>
-            </div>
+			<div
+				class="flex flex-col md:flex-row justify-between gap-4 w-full p-4"
+			>
+				<div>
+					<h2><strong>{orgData.name}</strong></h2>
+					<p class="text-sm">
+						{
+							orgData.type == "association"
+								? "Asociación/Refugio"
+								: "Rescatista Independiente"
+						}
+					</p>
+					<p class="text-muted-foreground text-sm">
+						https://adoptables.mx/org/{orgData.slug}
+					</p>
+				</div>
+				<div class="flex justify-evenly gap-4">
+					<a href={`tel:${orgData.phone}`} class="text-primary">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="lucide lucide-facebook-icon lucide-facebook"
+							><path
+								d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+							></path></svg
+						>
+					</a>
+					<a href="#" class="text-primary">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="lucide lucide-instagram-icon lucide-instagram"
+							><rect
+								width="20"
+								height="20"
+								x="2"
+								y="2"
+								rx="5"
+								ry="5"></rect><path
+								d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"
+							></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"
+							></line></svg
+						>
+					</a>
+					<a href="#" class="text-primary">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke-width="1.5"
+							stroke="currentColor"
+							class="size-6"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+							></path>
+						</svg>
+					</a>
+					<a href="#" class="text-primary">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke-width="1.5"
+							stroke="currentColor"
+							class="size-6"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+							></path>
+						</svg>
+					</a>
+				</div>
+			</div>
+		</div>
 
+		<h3
+			class="text-center text-3xl py-12 text-primary border-b-2 border-primary mb-8"
+		>
+			Nuestros Adoptables
+		</h3>
 
-        </div>
+		{
+			error && (
+				<div class="alert alert-error">
+					<p>
+						Hubo un problema al cargar los adoptables de esta
+						organización. Por favor, intenta más tarde.
+					</p>
+				</div>
+			)
+		}
 
-        <h3>Lista de Adoptables</h3>
-        <p>...</p>
-    </div>
+		{
+			!error && petList?.length === 0 && (
+				<div class="empty-state">
+					<p>Aún no hay adoptables disponibles.</p>
+				</div>
+			)
+		}
+
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+			{petList?.map((pet) => <PetCard {...pet} />)}
+		</div>
+	</div>
 </Layout>
+
+<style>
+	.empty-state {
+		text-align: center;
+		padding: 3rem 1rem;
+		color: #666;
+	}
+
+	.alert-error {
+		background: #fee;
+		border: 1px solid #fcc;
+		padding: 1rem;
+		border-radius: 0.5rem;
+		color: #c33;
+	}
+</style>
