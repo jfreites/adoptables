@@ -1,44 +1,20 @@
 ---
-// src/pages/pets/[id].astro
-// Assumes the pet data will be provided by an Astro Action / server loader.
-// While you wire Supabase, this file also includes a tiny local fallback `petsData`.
-
 export const prerender = false;
 
 import Layout from "@/layouts/Layout.astro";
 import PetGallery from "@/components/PetGallery.astro"; // ensure you have the Astro version
-
-import petDog1 from "@/assets/pet-dog-1.jpg";
-import petCat1 from "@/assets/pet-cat-1.jpg";
-import petDog2 from "@/assets/pet-dog-2.jpg";
-import petCat2 from "@/assets/pet-cat-2.jpg";
-
+import { translatePetSpecies } from '@/lib/utils';
 import { actions } from 'astro:actions';
 
-
-// Fallback mock (remove once you fetch from Supabase)
-const petsData: Record<string, any> = {
-  "1": {
-    name: "Buddy",
-    images: [petDog1, petDog2, petDog1],
-    age: "2 añosa",
-    breed: "Golden Retriever",
-    location: "El Pueblito, Corregidora",
-    type: "dog",
-    size: "Grande",
-    gender: "Macho",
-    color: "Café dorado",
-    bio: "Meet Buddy, an energetic and loving Golden Retriever who's always ready for an adventure! Buddy loves playing fetch, going on long walks, and cuddling on the couch. He's great with kids and other dogs, making him the perfect family companion. Buddy is fully vaccinated, neutered, and house-trained. He knows basic commands and is eager to learn more. His favorite things include swimming, car rides, and treats (of course!). Buddy is looking for an active family who can give him lots of love and attention.",
-  },
-};
-
 // URL param
-const { id } = Astro.params;
+const { slug } = Astro.params;
 
-// TODO: Replace with your Action call (e.g., const pet = await getPetById(id))
-const pet = id ? petsData[id] : null;
-const petDB = await Astro.callAction(actions.get_pet_by_slug, { slug: 'max'}); // Example Action call
-console.log(petDB);
+if (!slug) {
+	return redirect('/adoptables');
+}
+
+const result = await Astro.callAction(actions.get_pet_by_slug, { slug: slug });
+const pet = result.data?.pet || null;
 ---
 
 <Layout>
@@ -55,7 +31,7 @@ console.log(petDB);
             </a>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-            <PetGallery images={pet.images} petName={pet.name} />
+            <PetGallery images={pet.pet_images || []} petName={pet.name} />
 
             <div class="space-y-6">
                 <div>
@@ -91,10 +67,10 @@ console.log(petDB);
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    <span class="rounded-full px-4 py-2 text-base bg-primary text-primary-foreground">{pet.type === 'dog' ? '🐶 Dog' : '🐱 Cat'}</span>
-                    <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.age}</span>
-                    <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.gender}</span>
-                    <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.size}</span>
+                    <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground">{pet.species === 'dog' ? '🐶 Perro' : '🐱 Gato'}</span>
+                    <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.age} años</span>
+                    <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.gender === 'male' ? 'Macho' : 'Hembra'}</span>
+                    <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{translatePetSpecies(pet.size)}</span>
                 </div>
                 </div>
 
@@ -103,11 +79,11 @@ console.log(petDB);
                     <div class="grid grid-cols-2 gap-4">
                     <div>
                         <p class="text-sm text-muted-foreground mb-1">Edad</p>
-                        <p class="font-semibold text-lg">{pet.age}</p>
+                        <p class="font-semibold text-lg">{pet.age} años</p>
                     </div>
                     <div>
                         <p class="text-sm text-muted-foreground mb-1">Talla</p>
-                        <p class="font-semibold text-lg">{pet.size}</p>
+                        <p class="font-semibold text-lg">{translatePetSpecies(pet.size)}</p>
                     </div>
                     <div>
                         <p class="text-sm text-muted-foreground mb-1">Color</p>
@@ -115,19 +91,15 @@ console.log(petDB);
                     </div>
                     <div>
                         <p class="text-sm text-muted-foreground mb-1">Género</p>
-                        <p class="font-semibold text-lg">{pet.gender}</p>
+                        <p class="font-semibold text-lg">{pet.gender === 'male' ? 'Macho' : 'Hembra'}</p>
                     </div>
                     </div>
                 </div>
                 </div>
 
-                <button
-                id="apply-btn"
-                type="button"
-                class="w-full rounded-full text-lg h-14 shadow-lg hover:shadow-xl hover:cursor-pointer transition-shadow bg-primary text-primary-foreground"
-                >
-                    Quiero adoptar a {pet.name}
-                </button>
+                <a href={`/solicitud-adopcion/${pet.slug}`} class="w-full py-4 px-6 inline-flex items-center justify-center rounded-full text-lg h-14 shadow-lg hover:shadow-xl hover:cursor-pointer transition-shadow bg-primary text-primary-foreground">
+               		Quiero adoptar a {pet.name}
+                </a>
                 <p id="share-status" class="sr-only" role="status">Link ready to copy</p>
             </div>
             </div>
@@ -193,9 +165,9 @@ console.log(petDB);
   }
 
   // Apply button opens the <dialog> modal
-  const applyBtn = document.getElementById('apply-btn');
-  const modal = document.getElementById('auth-modal');
-  if (applyBtn && modal && typeof modal.showModal === 'function') {
-    applyBtn.addEventListener('click', () => modal.showModal());
-  }
+  //const applyBtn = document.getElementById('apply-btn');
+  //const modal = document.getElementById('auth-modal');
+  //if (applyBtn && modal && typeof modal.showModal === 'function') {
+  //  applyBtn.addEventListener('click', () => modal.showModal());
+  //}
 </script>

@@ -1,22 +1,18 @@
 ---
-// Props: images: string[], petName: string
-// FIXME: replace string[] with proper type if available
-// Uses a tiny inline script to manage currentIndex and UI updates.
-
 export interface Props {
   images: string[];
   petName: string;
 }
 
-const { images = [], petName = 'Pet' } = Astro.props as Props;
+const { images = [], petName = 'Adoptable' } = Astro.props as Props;
 const hasMany = images.length > 1;
 ---
 <div class="space-y-4" id="pet-gallery" data-count={images.length}>
   <div class="relative aspect-[4/3] overflow-hidden rounded-3xl bg-muted">
     <img
       id="pg-main"
-      src={images[0].src || '/fallbacks/dog-placeholder.jpg'}
-      alt={`${petName} - Photo 1`}
+      src={images[0].url || '/fallbacks/dog-placeholder.jpg'}
+      alt={`${petName} - Foto 1`}
       class="w-full h-full object-cover"
       loading="eager"
       onerror="this.onerror=null;this.src='/fallbacks/dog-placeholder.jpg'"
@@ -72,7 +68,7 @@ const hasMany = images.length > 1;
           aria-label={`Select image ${index + 1}`}
         >
           <img
-            src={image.src}
+            src={image.url}
             alt={`${petName} thumbnail ${index + 1}`}
             class="w-full h-full object-cover"
             loading="lazy"

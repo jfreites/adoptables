@@ -1,351 +1,786 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-
+import { supabase } from "@/lib/supabase";
+import { getUserProfileWithOrganization } from "@/services/auth";
 import { actions } from "astro:actions";
 
 // Se puede leer ?next o cualquier otro query si deseas redirigir luego
 const url = new URL(Astro.request.url);
 const next = url.searchParams.get("next") ?? "/dahboard";
 
+const user = Astro.locals.user;
 
+if (!user) {
+	return Astro.redirect("/login");
+}
+
+// Check if user is authenticated
+// const accessToken = Astro.cookies.get("sb-access-token")?.value;
+// const refreshToken = Astro.cookies.get("sb-refresh-token")?.value;
+
+// if (!accessToken || !refreshToken) {
+// 	return Astro.redirect("/login");
+// }
+
+// Verify the session
+// const {
+// 	data: { user },
+// 	error,
+// } = await supabase.auth.getUser(accessToken);
+
+// Get user profile with organization info
+let userProfile;
+try {
+	userProfile = await getUserProfileWithOrganization(user.id);
+} catch (err) {
+	console.error("Error fetching user profile:", err);
+	userProfile = null;
+}
+
+const organization = userProfile?.user_organizations?.[0]?.organizations;
+
+const result = Astro.getActionResult(actions.publish_pet);
+console.log(result);
 ---
+
 <Layout>
-    <div class="container mx-auto px-4 py-12">
-        <div class="max-w-3xl mx-auto">
-              <section class="border-2 rounded-3xl bg-card text-card-foreground">
-                  <header class="p-6 border-b">
-                      <h1 class="text-3xl font-bold">Publicar un Adoptable</h1>
-                      <p class="text-muted-foreground">Llena la información de forma precisa y establece las reglas para la adopción.</p>
-                  </header>
+	<div class="container mx-auto px-4 py-12">
+		<div class="max-w-3xl mx-auto">
+			<section class="border-2 rounded-3xl bg-card text-card-foreground">
+				<header class="p-6 border-b">
+					<h1 class="text-3xl font-bold">Publicar un Adoptable</h1>
+					<p class="text-muted-foreground">
+						Llena la información de forma precisa y sube fotos
+						claras para aumentar las posibilidades de adopción.
+					</p>
+				</header>
 
-                  <div class="p-6">
-                        <form
-                            method="POST"
-                            action={actions.publish_pet}
-                            enctype="multipart/form-data"
-                            class="space-y-6"
-                            data-loading
-                            id="submit-pet-form"
-                        >
-                            <input type="hidden" name="next" value={next} />
+				<div class="p-6">
+					<form
+						method="POST"
+						action={actions.publish_pet}
+						enctype="multipart/form-data"
+						class="space-y-6"
+						data-loading
+						id="submit-pet-form"
+					>
+						<input type="hidden" name="next" value={next} />
 
-                            <!-- Basic Information -->
-                            <div class="space-y-4">
-                              <h3 class="text-xl font-semibold text-primary">Información Básica</h3>
+						<input
+							type="hidden"
+							name="org_id"
+							value={organization?.id || ""}
+						/>
 
-                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="space-y-2">
-                                  <label for="name" class="text-sm font-medium">Nombre del Adoptable *</label>
-                                  <input id="name" name="name" placeholder="Buddy" required class="w-full h-11 px-3 rounded-md border bg-background" />
-                                </div>
+						<!-- Basic Information -->
+						<div class="space-y-4">
+							<h3 class="text-xl font-semibold text-primary">
+								Información Básica
+							</h3>
 
-                                <div class="space-y-2">
-                                  <label for="type" class="text-sm font-medium">Especie *</label>
-                                  <select id="type" name="type" required class="w-full h-11 px-3 rounded-md border bg-background">
-                                    <option value="" disabled selected>Selecciona especie</option>
-                                    <option value="dog">Perro</option>
-                                    <option value="cat">Gato</option>
-                                    <option value="other">Otro</option>
-                                  </select>
-                                </div>
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div class="space-y-2">
+									<label
+										for="name"
+										class="text-sm font-medium"
+										>Nombre del Adoptable *</label
+									>
+									<input
+										id="name"
+										name="name"
+										placeholder="Buddy"
+										required
+										class="w-full h-11 px-3 rounded-md border bg-background"
+									/>
+								</div>
 
-                                <div class="space-y-2">
-                                  <label for="breed" class="text-sm font-medium">Raza *</label>
-                                  <input id="breed" name="breed" placeholder="Golden Retriever" required class="w-full h-11 px-3 rounded-md border bg-background" />
-                                </div>
+								<div class="space-y-2">
+									<label
+										for="type"
+										class="text-sm font-medium"
+										>Especie *</label
+									>
+									<select
+										id="species"
+										name="species"
+										required
+										class="w-full h-11 px-3 rounded-md border bg-background"
+									>
+										<option value="" disabled selected
+											>Selecciona especie</option
+										>
+										<option value="dog">Perro</option>
+										<option value="cat">Gato</option>
+										<option value="other">Otro</option>
+									</select>
+								</div>
 
-                                <div class="space-y-2">
-                                  <label for="gender" class="text-sm font-medium">Género *</label>
-                                  <select id="gender" name="gender" required class="w-full h-11 px-3 rounded-md border bg-background">
-                                    <option value="" disabled selected>Select gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                  </select>
-                                </div>
+								<div class="space-y-2">
+									<label
+										for="breed"
+										class="text-sm font-medium">Raza</label
+									>
+									<input
+										id="breed"
+										name="breed"
+										placeholder="Golden Retriever"
+										class="w-full h-11 px-3 rounded-md border bg-background"
+									/>
+								</div>
 
-                                <div class="space-y-2">
-                                  <label for="age" class="text-sm font-medium">Edad (años) *</label>
-                                  <input id="age" name="age" type="number" min="0" placeholder="1" required class="w-full h-11 px-3 rounded-md border bg-background" />
-                                </div>
+								<div class="space-y-2">
+									<label
+										for="gender"
+										class="text-sm font-medium"
+										>Género *</label
+									>
+									<select
+										id="gender"
+										name="gender"
+										required
+										class="w-full h-11 px-3 rounded-md border bg-background"
+									>
+										<option value="" disabled selected
+											>Selecciona el género</option
+										>
+										<option value="male">Male</option>
+										<option value="female">Female</option>
+									</select>
+								</div>
 
-                                <div class="space-y-2">
-                                  <label for="size" class="text-sm font-medium">Talla *</label>
-                                  <select id="size" name="size" required class="w-full h-11 px-3 rounded-md border bg-background">
-                                    <option value="" disabled selected>Select size</option>
-                                    <option value="small">Pequeña</option>
-                                    <option value="medium">Mediana</option>
-                                    <option value="large">Grande</option>
-                                  </select>
-                                </div>
+								<div class="space-y-2">
+									<label for="age" class="text-sm font-medium"
+										>Edad (años) *</label
+									>
+									<input
+										id="age"
+										name="age"
+										type="number"
+										min="0"
+										placeholder="1"
+										required
+										class="w-full h-11 px-3 rounded-md border bg-background"
+									/>
+								</div>
 
-                                <div class="space-y-2">
-                                  <label for="color" class="text-sm font-medium">Color *</label>
-                                  <input id="color" name="color" placeholder="Brown & White" required class="w-full h-11 px-3 rounded-md border bg-background" />
-                                </div>
+								<div class="space-y-2">
+									<label
+										for="size"
+										class="text-sm font-medium"
+										>Talla *</label
+									>
+									<select
+										id="size"
+										name="size"
+										required
+										class="w-full h-11 px-3 rounded-md border bg-background"
+									>
+										<option value="" disabled selected
+											>Selecciona talla</option
+										>
+										<option value="small">Pequeña</option>
+										<option value="medium">Mediana</option>
+										<option value="large">Grande</option>
+									</select>
+								</div>
 
-                                <div class="space-y-2">
-                                  <label for="location" class="text-sm font-medium">Ubicación *</label>
-                                  <input id="location" name="location" placeholder="Corregidora, Querétaro" required class="w-full h-11 px-3 rounded-md border bg-background" />
-                                </div>
-                              </div>
+								<div class="space-y-2">
+									<label
+										for="color"
+										class="text-sm font-medium"
+										>Color *</label
+									>
+									<input
+										id="color"
+										name="color"
+										placeholder="Blanco y Café"
+										required
+										class="w-full h-11 px-3 rounded-md border bg-background"
+									/>
+								</div>
 
-                              <div class="space-y-2">
-                                <label for="bio" class="text-sm font-medium">Bio *</label>
-                                <textarea
-                                  id="bio"
-                                  name="bio"
-                                  placeholder="Cuentanos sobre la personalidad del adoptable, habitos y necesidades especiales..."
-                                  class="w-full min-h-[120px] px-3 py-2 rounded-md border bg-background"
-                                  required
-                                ></textarea>
-                              </div>
-                            </div>
+								<div class="space-y-2">
+									<label
+										for="location"
+										class="text-sm font-medium"
+										>Ubicación *</label
+									>
+									<input
+										id="location"
+										name="location"
+										placeholder="Corregidora, Querétaro"
+										required
+										class="w-full h-11 px-3 rounded-md border bg-background"
+									/>
+								</div>
+							</div>
 
-                            <!-- Photos Upload -->
-                            <div class="space-y-4">
-                              <h3 class="text-xl font-semibold text-primary">Fotos</h3>
-                              <div class="space-y-2">
-                                <label for="photos" class="text-sm font-medium">Subir Fotos (Max. 4)</label>
-                                <div class="flex items-center justify-center w-full">
-                                  <label
-                                    for="photos"
-                                    class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-accent/20 hover:bg-accent/40 transition-colors"
-                                  >
-                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                      <!-- Upload icon -->
-                                      <svg class="w-8 h-8 mb-2 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="17 8 12 3 7 8"/>
-                                        <line x1="12" y1="3" x2="12" y2="15"/>
-                                      </svg>
-                                      <p id="photos-helper" class="text-sm text-muted-foreground">
-                                        Click para subir fotos
-                                      </p>
-                                    </div>
-                                    <input
-                                      id="photos"
-                                      name="photos"
-                                      type="file"
-                                      class="hidden"
-                                      multiple
-                                      accept="image/*"
-                                    />
-                                  </label>
-                                </div>
-                                <p id="photos-error" class="text-sm text-destructive hidden">You can upload up to 5 images.</p>
-                              </div>
-                            </div>
+							<div class="space-y-2">
+								<label for="bio" class="text-sm font-medium"
+									>Bio *</label
+								>
+								<textarea
+									id="bio"
+									name="bio"
+									placeholder="Cuentanos sobre la personalidad del adoptable, habitos y necesidades especiales..."
+									class="w-full min-h-[120px] px-3 py-2 rounded-md border bg-background"
+									required></textarea>
+							</div>
+						</div>
 
-                            <!-- Adoption Rules -->
-                            <div class="space-y-4">
-                              <h3 class="text-xl font-semibold text-primary">Reglas de Adopción y Requerimientos</h3>
-                              <div class="rounded-2xl bg-accent/20 border p-6">
+						<div class="space-y-4">
+							<h3>Imagenes</h3>
 
-                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                      <div class="space-y-2">
-                                          <label for="" class="text-sm font-medium">Edad minima del interesado</label>
-                                          <input type="number" name="min_age_years" value="18" class="w-full h-11 px-3 rounded-md border bg-background">
-                                      </div>
+							<input
+								type="file"
+								name="images"
+								accept="image/*"
+								multiple
+								id="imageInput"
+							/>
+							<div id="imagePreview"></div>
+						</div>
 
-                                      <div class="space-y-2">
-                                          <label for="" class="text-sm font-medium">Horas fuera (máx/semana)</label>
-                                          <input type="number" name="max_hours_away_per_week" value="12" min="0" max="168" class="w-full h-11 px-3 rounded-md border bg-background">
-                                      </div>
+						<!-- Photos Upload -->
+						<div class="space-y-4">
+							<h3 class="text-xl font-semibold text-primary">
+								Fotos
+							</h3>
+							<div class="space-y-2">
+								<label for="photos" class="text-sm font-medium"
+									>Subir Fotos (Max. 4)</label
+								>
+								<div
+									class="flex items-center justify-center w-full"
+								>
+									<label
+										for="photos"
+										class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-accent/20 hover:bg-accent/40 transition-colors"
+									>
+										<div
+											class="flex flex-col items-center justify-center pt-5 pb-6"
+										>
+											<!-- Upload icon -->
+											<svg
+												class="w-8 h-8 mb-2 text-muted-foreground"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												aria-hidden="true"
+											>
+												<path
+													d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+												></path>
+												<polyline points="17 8 12 3 7 8"
+												></polyline>
+												<line
+													x1="12"
+													y1="3"
+													x2="12"
+													y2="15"></line>
+											</svg>
+											<p
+												id="photos-helper"
+												class="text-sm text-muted-foreground"
+											>
+												Click para subir fotos
+											</p>
+										</div>
+										<input
+											id="photos"
+											name="photos"
+											type="file"
+											class="hidden"
+											multiple
+											accept="image/*"
+										/>
+									</label>
+								</div>
+								<p
+									id="photos-error"
+									class="text-sm text-destructive hidden"
+								>
+									You can upload up to 5 images.
+								</p>
+							</div>
+						</div>
 
-                                      <div class="space-y-2">
-                                          <label for="" class="text-sm font-medium">Tipos de vivienda permitidos</label>
-                                          <select name="allowed_housing" id="allowed_housing" class="w-full h-11 px-3 rounded-md border bg-background">
-                                              <option value="own">Propia</option>
-                                              <option value="with_family">Vivo con mis padres</option>
-                                              <option value="rent">Rentada</option>
-                                          </select>
-                                      </div>
+						<div class="space-y-4">
+							<label for="size" class="text-sm font-medium"
+								>Selecciona el tipo de formulario *</label
+							>
+							<select
+								id="size"
+								name="size"
+								required
+								class="w-full h-11 px-3 rounded-md border bg-background"
+							>
+								<option value="" disabled selected
+									>Seleccionar formulario</option
+								>
+								<option value="small">Formulario Gatos</option>
+								<option value="medium"
+									>Fomrmulario Perros</option
+								>
+								<option value="large"
+									>Formulario Gatos externos</option
+								>
+							</select>
+						</div>
 
-                                      <div class="space-y-2">
-                                          <label class="flex items-start gap-3 cursor-pointer">
-                                            <input id="require_landlord_permission" name="require_landlord_permission" type="checkbox" class="mt-1 h-4 w-4 rounded border" />
-                                            <span class="leading-relaxed text-sm font-medium">Requiere permiso del arrendador (si renta)</span>
-                                          </label>
-                                      </div>
+						<!-- Adoption Rules -->
+						<div class="space-y-4">
+							<h3 class="text-xl font-semibold text-primary">
+								Reglas de Adopción y Requerimientos
+							</h3>
+							<div class="rounded-2xl bg-accent/20 border p-6">
+								<div
+									class="grid grid-cols-1 md:grid-cols-2 gap-4"
+								>
+									<div class="space-y-2">
+										<label
+											for=""
+											class="text-sm font-medium"
+											>Edad minima del interesado</label
+										>
+										<input
+											type="number"
+											name="min_age_years"
+											value="18"
+											class="w-full h-11 px-3 rounded-md border bg-background"
+										/>
+									</div>
 
-                                      <div class="space-y-2">
-                                        <label class="flex items-start gap-3 cursor-pointer">
-                                            <input id="disallow_free_roam" name="disallow_free_roam" type="checkbox" class="mt-1 h-4 w-4 rounded border" />
-                                            <span class="leading-relaxed text-sm font-medium">No se permite salir al exterior</span>
-                                        </label>
-                                      </div>
+									<div class="space-y-2">
+										<label
+											for=""
+											class="text-sm font-medium"
+											>Horas fuera (máx/semana)</label
+										>
+										<input
+											type="number"
+											name="max_hours_away_per_week"
+											value="12"
+											min="0"
+											max="168"
+											class="w-full h-11 px-3 rounded-md border bg-background"
+										/>
+									</div>
 
-                                      <div class="space-y-2">
-                                        <label class="flex items-start gap-3 cursor-pointer">
-                                            <input id="require_commits" name="require_commits" type="checkbox" value="sterilization" class="mt-1 h-4 w-4 rounded border" />
-                                            <span class="leading-relaxed text-sm font-medium">Compromiso: esterilización</span>
-                                        </label>
-                                      </div>
+									<div class="space-y-2">
+										<label
+											for=""
+											class="text-sm font-medium"
+											>Tipos de vivienda permitidos</label
+										>
+										<select
+											name="allowed_housing"
+											id="allowed_housing"
+											class="w-full h-11 px-3 rounded-md border bg-background"
+										>
+											<option value="own">Propia</option>
+											<option value="with_family"
+												>Vivo con mis padres</option
+											>
+											<option value="rent">Rentada</option
+											>
+										</select>
+									</div>
 
-                                      <div class="space-y-2">
-                                        <label class="flex items-start gap-3 cursor-pointer">
-                                            <input id="require_commits" name="require_commits" type="checkbox" value="vaccines" class="mt-1 h-4 w-4 rounded border" />
-                                            <span class="leading-relaxed text-sm font-medium">Compromiso: vacunas</span>
-                                        </label>
-                                      </div>
+									<div class="space-y-2">
+										<label
+											class="flex items-start gap-3 cursor-pointer"
+										>
+											<input
+												id="require_landlord_permission"
+												name="require_landlord_permission"
+												type="checkbox"
+												class="mt-1 h-4 w-4 rounded border"
+											/>
+											<span
+												class="leading-relaxed text-sm font-medium"
+												>Requiere permiso del arrendador
+												(si renta)</span
+											>
+										</label>
+									</div>
 
-                                      <div class="space-y-2">
-                                        <label class="flex items-start gap-3 cursor-pointer">
-                                            <input id="require_commits" name="require_commits" type="checkbox" value="accept_contract" class="mt-1 h-4 w-4 rounded border" />
-                                            <span class="leading-relaxed text-sm font-medium">Acepta contrato/seguimiento</span>
-                                        </label>
-                                      </div>
+									<div class="space-y-2">
+										<label
+											class="flex items-start gap-3 cursor-pointer"
+										>
+											<input
+												id="disallow_free_roam"
+												name="disallow_free_roam"
+												type="checkbox"
+												class="mt-1 h-4 w-4 rounded border"
+											/>
+											<span
+												class="leading-relaxed text-sm font-medium"
+												>No se permite salir al exterior</span
+											>
+										</label>
+									</div>
 
-                                      <div class="space-y-2">
-                                          <label for="" class="text-sm font-medium">Motivación (# caracteres mínimos)</label>
-                                          <input type="number" name="min_motivation_chars" min="10" value="10" class="w-full h-11 px-3 rounded-md border bg-background">
-                                      </div>
+									<div class="space-y-2">
+										<label
+											class="flex items-start gap-3 cursor-pointer"
+										>
+											<input
+												id="require_commits"
+												name="require_commits"
+												type="checkbox"
+												value="sterilization"
+												class="mt-1 h-4 w-4 rounded border"
+											/>
+											<span
+												class="leading-relaxed text-sm font-medium"
+												>Compromiso: esterilización</span
+											>
+										</label>
+									</div>
 
-                                      <div class="space-y-2">
-                                          <label for="" class="text-sm font-medium">Convive con gatos</label>
-                                          <select name="accepts_other_cats" id="accepts_other_cats" class="w-full h-11 px-3 rounded-md border bg-background">
-                                              <option value="">Indiferente</option>
-                                              <option value="1">Si</option>
-                                              <option value="0">No</option>
-                                          </select>
-                                      </div>
+									<div class="space-y-2">
+										<label
+											class="flex items-start gap-3 cursor-pointer"
+										>
+											<input
+												id="require_commits"
+												name="require_commits"
+												type="checkbox"
+												value="vaccines"
+												class="mt-1 h-4 w-4 rounded border"
+											/>
+											<span
+												class="leading-relaxed text-sm font-medium"
+												>Compromiso: vacunas</span
+											>
+										</label>
+									</div>
 
-                                      <div class="space-y-2">
-                                          <label for="">Convive con perros</label>
-                                          <select name="accepts_other_dogs" id="accepts_other_dogs" class="w-full h-11 px-3 rounded-md border bg-background">
-                                              <option value="">Indiferente</option>
-                                              <option value="1">Si</option>
-                                              <option value="0">No</option>
-                                          </select>
-                                      </div>
+									<div class="space-y-2">
+										<label
+											class="flex items-start gap-3 cursor-pointer"
+										>
+											<input
+												id="require_commits"
+												name="require_commits"
+												type="checkbox"
+												value="accept_contract"
+												class="mt-1 h-4 w-4 rounded border"
+											/>
+											<span
+												class="leading-relaxed text-sm font-medium"
+												>Acepta contrato/seguimiento</span
+											>
+										</label>
+									</div>
 
-                                      <div class="space-y-2">
-                                          <label for="" class="text-sm font-medium">Periodo de prueba (días)</label>
-                                          <input type="number" name="trial_period_days" min="0" max="30" class="w-full h-11 px-3 rounded-md border bg-background">
-                                      </div>
+									<div class="space-y-2">
+										<label
+											for=""
+											class="text-sm font-medium"
+											>Motivación (# caracteres mínimos)</label
+										>
+										<input
+											type="number"
+											name="min_motivation_chars"
+											min="10"
+											value="10"
+											class="w-full h-11 px-3 rounded-md border bg-background"
+										/>
+									</div>
 
-                                      <div class="space-y-2">
-                                          <label class="flex items-start gap-3 cursor-pointer">
-                                            <input id="require_id_tag" name="require_id_tag" type="checkbox" class="mt-1 h-4 w-4 rounded border" />
-                                            <span class="leading-relaxed">Placa de identificación obligatoria</span>
-                                          </label>
-                                      </div>
+									<div class="space-y-2">
+										<label
+											for=""
+											class="text-sm font-medium"
+											>Convive con gatos</label
+										>
+										<select
+											name="accepts_other_cats"
+											id="accepts_other_cats"
+											class="w-full h-11 px-3 rounded-md border bg-background"
+										>
+											<option value="">Indiferente</option
+											>
+											<option value="1">Si</option>
+											<option value="0">No</option>
+										</select>
+									</div>
 
-                                      <div class="space-y-2">
-                                          <label class="flex items-start gap-3 cursor-pointer">
-                                            <input id="require_leash_walks" name="require_leash_walks" type="checkbox" class="mt-1 h-4 w-4 rounded border" />
-                                            <span class="leading-relaxed">Paseos con correa (Perros)</span>
-                                          </label>
-                                      </div>
+									<div class="space-y-2">
+										<label for="">Convive con perros</label>
+										<select
+											name="accepts_other_dogs"
+											id="accepts_other_dogs"
+											class="w-full h-11 px-3 rounded-md border bg-background"
+										>
+											<option value="">Indiferente</option
+											>
+											<option value="1">Si</option>
+											<option value="0">No</option>
+										</select>
+									</div>
 
-                                      <div class="space-y-2">
-                                        <label class="flex items-start gap-3 cursor-pointer">
-                                            <input id="forbid_tethering" name="forbid_tethering" type="checkbox" class="mt-1 h-4 w-4 rounded border" />
-                                            <span class="leading-relaxed">Prohibido amarrar/encadenar</span>
-                                        </label>
-                                      </div>
+									<div class="space-y-2">
+										<label
+											for=""
+											class="text-sm font-medium"
+											>Periodo de prueba (días)</label
+										>
+										<input
+											type="number"
+											name="trial_period_days"
+											min="0"
+											max="30"
+											class="w-full h-11 px-3 rounded-md border bg-background"
+										/>
+									</div>
 
-                                      <div class="space-y-2">
-                                          documentos requeridos obligatortios: INE, constancia domicilio, etc
-                                      </div>
+									<div class="space-y-2">
+										<label
+											class="flex items-start gap-3 cursor-pointer"
+										>
+											<input
+												id="require_id_tag"
+												name="require_id_tag"
+												type="checkbox"
+												class="mt-1 h-4 w-4 rounded border"
+											/>
+											<span class="leading-relaxed"
+												>Placa de identificación
+												obligatoria</span
+											>
+										</label>
+									</div>
 
-                                      <div class="space-y-2">
-                                        <label class="flex items-start gap-3 cursor-pointer">
-                                            <input id="rule1" name="rule1" type="checkbox" required class="mt-1 h-4 w-4 rounded border" />
-                                            <span class="leading-relaxed">I confirm this pet is up to date with vaccinations and has been health-checked</span>
-                                        </label>
-                                      </div>
+									<div class="space-y-2">
+										<label
+											class="flex items-start gap-3 cursor-pointer"
+										>
+											<input
+												id="require_leash_walks"
+												name="require_leash_walks"
+												type="checkbox"
+												class="mt-1 h-4 w-4 rounded border"
+											/>
+											<span class="leading-relaxed"
+												>Paseos con correa (Perros)</span
+											>
+										</label>
+									</div>
 
-                                      <div class="space-y-2">
-                                        <label class="flex items-start gap-3 cursor-pointer">
-                                            <input id="rule2" name="rule2" type="checkbox" required class="mt-1 h-4 w-4 rounded border" />
-                                            <span class="leading-relaxed">For cats: Must be kept indoors or have secure outdoor access. Windows must be protected with screens</span>
-                                        </label>
-                                      </div>
+									<div class="space-y-2">
+										<label
+											class="flex items-start gap-3 cursor-pointer"
+										>
+											<input
+												id="forbid_tethering"
+												name="forbid_tethering"
+												type="checkbox"
+												class="mt-1 h-4 w-4 rounded border"
+											/>
+											<span class="leading-relaxed"
+												>Prohibido amarrar/encadenar</span
+											>
+										</label>
+									</div>
 
-                                      <div class="space-y-2">
-                                        <label class="flex items-start gap-3 cursor-pointer">
-                                            <input id="rule3" name="rule3" type="checkbox" required class="mt-1 h-4 w-4 rounded border" />
-                                            <span class="leading-relaxed">For dogs: Must have access to a secure yard or daily walks. No extended periods alone</span>
-                                        </label>
-                                      </div>
+									<div class="space-y-2">
+										documentos requeridos obligatortios:
+										INE, constancia domicilio, etc
+									</div>
 
-                                      <div class="space-y-2">
-                                        <label class="flex items-start gap-3 cursor-pointer">
-                                            <input id="rule4" name="rule4" type="checkbox" required class="mt-1 h-4 w-4 rounded border" />
-                                            <span class="leading-relaxed">Adopter must agree to a home visit and provide references</span>
-                                        </label>
-                                      </div>
+									<div class="space-y-2">
+										<label
+											class="flex items-start gap-3 cursor-pointer"
+										>
+											<input
+												id="rule1"
+												name="rule1"
+												type="checkbox"
+												required
+												class="mt-1 h-4 w-4 rounded border"
+											/>
+											<span class="leading-relaxed"
+												>I confirm this pet is up to
+												date with vaccinations and has
+												been health-checked</span
+											>
+										</label>
+									</div>
 
-                                      <div class="space-y-2">
-                                        <label class="flex items-start gap-3 cursor-pointer">
-                                            <input id="rule5" name="rule5" type="checkbox" required class="mt-1 h-4 w-4 rounded border" />
-                                            <span class="leading-relaxed">I agree that the adoption organization may reclaim the pet if proper care is not provided</span>
-                                        </label>
-                                      </div>
-                                  </div>
-                              </div>
-                            </div>
+									<div class="space-y-2">
+										<label
+											class="flex items-start gap-3 cursor-pointer"
+										>
+											<input
+												id="rule2"
+												name="rule2"
+												type="checkbox"
+												required
+												class="mt-1 h-4 w-4 rounded border"
+											/>
+											<span class="leading-relaxed"
+												>For cats: Must be kept indoors
+												or have secure outdoor access.
+												Windows must be protected with
+												screens</span
+											>
+										</label>
+									</div>
 
-                            <button
-                              type="submit"
-                              class="w-full inline-flex items-center justify-center h-12 rounded-full bg-primary text-primary-foreground text-base hover:opacity-95 disabled:opacity-60"
-                              data-loading-text="Procesando..."
-                            >
-                                Publicar para Adopción
-                            </button>
-                        </form>
-                  </div>
-              </section>
-        </div>
-    </div>
+									<div class="space-y-2">
+										<label
+											class="flex items-start gap-3 cursor-pointer"
+										>
+											<input
+												id="rule3"
+												name="rule3"
+												type="checkbox"
+												required
+												class="mt-1 h-4 w-4 rounded border"
+											/>
+											<span class="leading-relaxed"
+												>For dogs: Must have access to a
+												secure yard or daily walks. No
+												extended periods alone</span
+											>
+										</label>
+									</div>
+
+									<div class="space-y-2">
+										<label
+											class="flex items-start gap-3 cursor-pointer"
+										>
+											<input
+												id="rule4"
+												name="rule4"
+												type="checkbox"
+												required
+												class="mt-1 h-4 w-4 rounded border"
+											/>
+											<span class="leading-relaxed"
+												>Adopter must agree to a home
+												visit and provide references</span
+											>
+										</label>
+									</div>
+
+									<div class="space-y-2">
+										<label
+											class="flex items-start gap-3 cursor-pointer"
+										>
+											<input
+												id="rule5"
+												name="rule5"
+												type="checkbox"
+												required
+												class="mt-1 h-4 w-4 rounded border"
+											/>
+											<span class="leading-relaxed"
+												>I agree that the adoption
+												organization may reclaim the pet
+												if proper care is not provided</span
+											>
+										</label>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<button
+							type="submit"
+							class="w-full inline-flex items-center justify-center h-12 rounded-full bg-primary text-primary-foreground text-base hover:opacity-95 disabled:opacity-60"
+							data-loading-text="Procesando..."
+						>
+							Publicar para Adopción
+						</button>
+					</form>
+				</div>
+			</section>
+		</div>
+	</div>
 </Layout>
 
 <script is:inline>
-  document.addEventListener("DOMContentLoaded", () => {
-    // Estado loading en submit
-    document.querySelectorAll('form[data-loading]').forEach((form) => {
-      form.addEventListener('submit', (e) => {
-        const btn = form.querySelector('button[type="submit"]');
-        if (!btn) return;
+	document.addEventListener("DOMContentLoaded", () => {
+		// Preview de imágenes (opcional)
+		const imageInput = document.getElementById("imageInput");
+		const imagePreview = document.getElementById("imagePreview");
 
-        // Límite de 5 imágenes antes de enviar
-        const input = form.querySelector('#photos');
-        const errorEl = form.querySelector('#photos-error');
-        if (input && input.files && input.files.length > 4) {
-          if (errorEl) {
-            errorEl.classList.remove('hidden');
-          }
-          e.preventDefault();
-          return;
-        }
+		imageInput?.addEventListener("change", (e) => {
+			const target = e.target;
+			const files = target.files;
 
-        btn.disabled = true;
-        const txt = btn.getAttribute('data-loading-text');
-        if (txt) btn.textContent = txt;
-      }, { once: true });
-    });
+			if (imagePreview && files) {
+				imagePreview.innerHTML = "";
+				Array.from(files).forEach((file) => {
+					const reader = new FileReader();
+					reader.onload = (e) => {
+						const img = document.createElement("img");
+						img.src = e.target?.result;
+						img.style.width = "100px";
+						img.style.height = "100px";
+						img.style.objectFit = "cover";
+						img.style.margin = "5px";
+						imagePreview.appendChild(img);
+					};
+					reader.readAsDataURL(file);
+				});
+			}
+		});
 
-    // Contador dinámico de archivos
-    const fileInput = document.getElementById('photos');
-    const helper = document.getElementById('photos-helper');
-    const errorEl = document.getElementById('photos-error');
+		// Estado loading en submit
+		document.querySelectorAll("form[data-loading]").forEach((form) => {
+			form.addEventListener(
+				"submit",
+				(e) => {
+					const btn = form.querySelector('button[type="submit"]');
+					if (!btn) return;
 
-    if (fileInput && helper) {
-      fileInput.addEventListener('change', () => {
-        const count = fileInput.files ? fileInput.files.length : 0;
-        if (count === 0) {
-          helper.textContent = "Click para subir fotos";
-          errorEl?.classList.add('hidden');
-        } else if (count > 4) {
-          helper.textContent = `${count} file(s) selected — limit is 4`;
-          errorEl?.classList.remove('hidden');
-        } else {
-          helper.textContent = `${count} file(s) selected`;
-          errorEl?.classList.add('hidden');
-        }
-      });
-    }
-  });
+					// Límite de 5 imágenes antes de enviar
+					const input = form.querySelector("#photos");
+					const errorEl = form.querySelector("#photos-error");
+					if (input && input.files && input.files.length > 4) {
+						if (errorEl) {
+							errorEl.classList.remove("hidden");
+						}
+						e.preventDefault();
+						return;
+					}
+
+					btn.disabled = true;
+					const txt = btn.getAttribute("data-loading-text");
+					if (txt) btn.textContent = txt;
+				},
+				{ once: true },
+			);
+		});
+
+		// Contador dinámico de archivos
+		const fileInput = document.getElementById("photos");
+		const helper = document.getElementById("photos-helper");
+		const errorEl = document.getElementById("photos-error");
+
+		if (fileInput && helper) {
+			fileInput.addEventListener("change", () => {
+				const count = fileInput.files ? fileInput.files.length : 0;
+				if (count === 0) {
+					helper.textContent = "Click para subir fotos";
+					errorEl?.classList.add("hidden");
+				} else if (count > 4) {
+					helper.textContent = `${count} file(s) selected — limit is 4`;
+					errorEl?.classList.remove("hidden");
+				} else {
+					helper.textContent = `${count} file(s) selected`;
+					errorEl?.classList.add("hidden");
+				}
+			});
+		}
+	});
 </script>

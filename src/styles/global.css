@@ -4,60 +4,61 @@
 
 /* Tokens de diseño — Tailwind v4 (@theme) */
 @theme {
-  /* Colores de marca / semánticos */
-  --color-background: #8EDCFF;        /* Azul cielo (fondo base) */
-  --color-foreground: #333333;        /* Texto principal */
-  --color-card: #FFFFFF;              /* Tarjetas, superficies */
-  --color-muted: #E5E5E5;             /* Bordes/divisores */
-  --color-border: #E5E5E5;
+	/* Colores de marca / semánticos */
+	--color-background: #8edcff; /* Azul cielo (fondo base) */
+	--color-foreground: #333333; /* Texto principal */
+	--color-card: #ffffff; /* Tarjetas, superficies */
+	--color-muted: #e5e5e5; /* Bordes/divisores */
+	--color-border: #e5e5e5;
 
-  --color-primary: #FF6B6B;           /* CTA: Coral */
-  --color-primary-foreground: #FFFFFF;
+	--color-primary: #ff6b6b; /* CTA: Coral */
+	--color-primary-foreground: #ffffff;
 
-  --color-secondary: #0077B6;         /* Azul profundo (links, énfasis) */
-  --color-secondary-foreground: #FFFFFF;
+	--color-secondary: #0077b6; /* Azul profundo (links, énfasis) */
+	--color-secondary-foreground: #ffffff;
 
-  --color-success: #4ECDC4;           /* Estados OK */
-  --color-warning: #FFD166;           /* Avisos */
+	--color-success: #4ecdc4; /* Estados OK */
+	--color-warning: #ffd166; /* Avisos */
 
-  /* Tipografías (elige una) */
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-               Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
-               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	/* Tipografías (elige una) */
+	--font-sans:
+		"Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+		"Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji",
+		"Segoe UI Symbol", "Noto Color Emoji";
 
-  /* Radios y sombras útiles */
-  --radius: 1rem;
+	/* Radios y sombras útiles */
+	--radius: 1rem;
 }
 
 /* Modo oscuro: sobreescribe lo necesario */
 @theme .dark {
-  --color-background: #0B1B24;        /* Azul petróleo muy oscuro */
-  --color-foreground: #F5F7FA;
-  --color-card: #0F2430;
-  --color-muted: #173545;
-  --color-border: #1C4255;
+	--color-background: #0b1b24; /* Azul petróleo muy oscuro */
+	--color-foreground: #f5f7fa;
+	--color-card: #0f2430;
+	--color-muted: #173545;
+	--color-border: #1c4255;
 
-  --color-primary: #FF6B6B;           /* Mantén el coral para CTA */
-  --color-primary-foreground: #FFFFFF;
+	--color-primary: #ff6b6b; /* Mantén el coral para CTA */
+	--color-primary-foreground: #ffffff;
 
-  --color-secondary: #5AB0E3;         /* Azul más claro para contraste en dark */
-  --color-secondary-foreground: #0B1B24;
+	--color-secondary: #5ab0e3; /* Azul más claro para contraste en dark */
+	--color-secondary-foreground: #0b1b24;
 }
 
 /* Utilidades opcionales (atajos) */
 .btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-2xl
+	@apply inline-flex items-center justify-center gap-2 rounded-2xl
          px-5 py-3 font-medium transition-colors duration-200;
 }
 .btn-primary {
-  @apply bg-primary text-primary-foreground hover:bg-primary/90;
+	@apply bg-primary text-primary-foreground hover:bg-primary/90;
 }
 .btn-secondary {
-  @apply bg-secondary text-secondary-foreground hover:bg-secondary/90;
+	@apply bg-secondary text-secondary-foreground hover:bg-secondary/90;
 }
 .card {
-  @apply bg-card text-foreground rounded-2xl shadow-sm border border-border;
+	@apply bg-card text-foreground rounded-2xl shadow-sm border border-border;
 }
 .link {
-  @apply text-secondary underline-offset-4 hover:underline;
+	@apply text-secondary underline-offset-4 hover:underline;
 }

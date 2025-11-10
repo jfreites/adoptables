@@ -1,95 +1,27 @@
 ---
-import Layout from '@/layouts/Layout.astro';
-import { fetchPetAndRule } from '@/lib/utils';
+import AdoptionForm from "@/components/AdoptionForm.astro";
+import Layout from "@/layouts/Layout.astro";
+import { fetchPetAndRules } from "@/lib/utils";
 
 const { petSlug } = Astro.params;
-const url = new URL(Astro.request.url);
-const step = url.searchParams.get('step') ?? '1';
-const appId = url.searchParams.get('app') ?? '';
 
-const { pet, rule } = await fetchPetAndRule(petSlug!);
+const { pet, rule, organization } = await fetchPetAndRules(petSlug!);
+
+if (!pet) {
+	return Astro.redirect("/adoptables", 302); // Use 302 for a temporary redirect
+}
 ---
+
 <Layout>
-    <div class="container mx-auto px-4 py-12">
+	<div class="container mx-auto px-4 py-12">
+		<h3 class="text-center text-2xl text-primary">
+			Solicitud de adopción de <strong>{pet.name}</strong>
+		</h3>
 
-    {step === '1' && (
-        <form method="POST" action="/actions/adoption/step1" enctype="multipart/form-data" class="grid gap-4 max-w-2xl mx-auto">
-        <input type="hidden" name="petSlug" value={pet.slug} />
-        <input type="hidden" name="userVerified" id="userVerified" value="false" />
+		<p class="text-center py-4 font-semibold">
+			Los datos estan protegidos y se usarán sólo para este proceso.
+		</p>
 
-        <!-- Applicant fields ... -->
-        <input name="name" placeholder="Name" class="input" required />
-        <input name="email" placeholder="Email" type="email" class="input" required />
-        <input name="phone" placeholder="Phone" class="input" required />
-        <input name="city" placeholder="City" class="input" required />
-        <select name="ageBracket" class="input" required>
-            {['18','21','25','30','35','40','45','50'].map(a => <option value={a}>{a}</option>)}
-        </select>
-
-        <!-- OTP (dummy) -->
-        <!-- <input name="otp" placeholder="OTP code" class="input" /> -->
-        <!-- <input type="hidden" name="phoneVerified" value="true" /> -->
-        <div class="flex gap-2">
-            <form method="POST" action="/actions/auth/email/send-otp">
-                <input type="hidden" name="email" value="" id="otpEmail" />
-                <button class="btn" onclick="document.getElementById('otpEmail').value = document.querySelector('input[name=email]').value;">Send code</button>
-            </form>
-            <form method="POST" action="/actions/auth/email/verify-otp" onsubmit="document.getElementById('userVerified').value='true'">
-                <input type="hidden" name="email" value="" id="otpEmailVerify" />
-                <input name="code" placeholder="6-digit code" class="input w-36" required />
-                <button class="btn" onclick="document.getElementById('otpEmailVerify').value = document.querySelector('input[name=email]').value;">Verify</button>
-            </form>
-        </div>
-
-        <!-- Documents -->
-        <input type="file" name="documents" multiple accept=".pdf,.jpg,.jpeg,.png,.webp" />
-        <input type="hidden" name="docsConfirmed" value={JSON.stringify({ ine:true, proof_of_address:true })} />
-
-        <button class="btn">Next</button>
-        </form>
-    )}
-
-    {step === '2' && (
-        <form method="POST" action="/actions/adoption/step2" class="grid gap-4 max-w-2xl mx-auto">
-        <input type="hidden" name="petSlug" value={pet.slug} />
-        <input type="hidden" name="app" value={appId} />
-        <!-- Housing & lifestyle ... -->
-        <select name="housingType" class="input" required>
-            {(rule?.allowed_housing?.length ? rule!.allowed_housing : ['own','rent','with_family']).map(h => <option value={h}>{h}</option>)}
-        </select>
-        <label class="flex gap-2 items-center">
-            <input type="checkbox" name="landlordAllowsPets" /> Landlord allows pets
-        </label>
-        <input name="hoursAwayPerWeek" type="number" min="0" max="168" class="input" required />
-        <select name="petEnvironment" class="input" required>
-            <option value="indoor">Indoor</option>
-            <option value="indoor_with_enclosed">Indoor + enclosed</option>
-            <option value="free_roam">Free roam</option>
-        </select>
-        <!-- ...más campos... -->
-        <button class="btn">Next</button>
-        </form>
-    )}
-
-    {step === '3' && (
-        <form method="POST" action="/actions/adoption/step3" class="grid gap-4 max-w-2xl mx-auto">
-        <input type="hidden" name="petSlug" value={pet.slug} />
-        <input type="hidden" name="app" value={appId} />
-        <label class="flex gap-2 items-center"><input type="checkbox" name="commitSterilization" /> Sterilization</label>
-        <label class="flex gap-2 items-center"><input type="checkbox" name="commitVaccines" /> Vaccines</label>
-        <label class="flex gap-2 items-center"><input type="checkbox" name="acceptContract" /> Accept Contract</label>
-        {rule?.require_family_consent && (
-            <label class="flex gap-2 items-center"><input type="checkbox" name="familyAgrees" /> Family agrees</label>
-        )}
-        <button class="btn">Submit</button>
-        </form>
-    )}
-
-    {step === 'done' && (
-        <div class="max-w-xl mx-auto text-center space-y-2">
-        <h1 class="text-3xl font-bold">Application submitted 🎉</h1>
-        <p class="text-muted-foreground">We’ll review your application and get back to you soon.</p>
-        </div>
-    )}
-    </div>
+		<AdoptionForm pet={pet} organization={organization} />
+	</div>
 </Layout>

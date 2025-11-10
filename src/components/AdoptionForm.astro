@@ -1,0 +1,1059 @@
+---
+import { actions } from "astro:actions";
+
+interface Props {
+	pet?: any;
+	organizacion?: any;
+}
+
+// Captura el query param para mostrar el mensaje
+const showSuccess = Astro.url.searchParams.get('success') === 'true';;
+
+const { pet, organization } = Astro.props;
+---
+
+<div style="max-width: 960px; margin: 2rem auto;">
+	{showSuccess && (
+	  <div class="success-message">
+	    Solicitud de adopción enviada exitosamente
+	  </div>
+	)}
+
+	<form
+		class="space-y-6"
+		method="post"
+		action={actions.adoption_request}
+		enctype="multipart/form-data"
+		id="submit-adoption-form"
+	>
+		<input type="hidden" name="pet_id" value={pet.id} />
+
+		<!-- Requester Data -->
+		<div class="space-y-4 form-section-card">
+			<h3 class="text-xl font-semibold text-primary">
+				Datos del Solicitante
+			</h3>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div class="space-y-2">
+					<label for="name" class="text-sm font-medium sr-only"
+						>Nombres</label
+					>
+					<input
+						id="name"
+						name="name"
+						type="text"
+						placeholder="Nombres"
+						required=""
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="lastnamel" class="text-sm font-medium sr-only"
+						>Apellidos</label
+					>
+					<input
+						id="lastname"
+						name="lastname"
+						type="text"
+						placeholder="Apellidos"
+						required=""
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label
+						for="birthdate"
+						class="text-md font-medium text-primary"
+						>Fecha de Nacimiento
+
+						<input
+							id="birthdate"
+							name="birthdate"
+							type="date"
+							required=""
+							class="w-full md:w-[60%] h-11 px-3 rounded-md border bg-background inline-block"
+						/>
+					</label>
+				</div>
+
+				<div class="space-y-2">
+					<label for="status" class="text-sm font-medium sr-only"
+						>Estado Civil</label
+					>
+					<select
+						id="status"
+						name="status"
+						required
+						class="w-full h-11 px-3 rounded-md border bg-background"
+					>
+						<option value="" disabled selected
+							>Selecciona estado civil</option
+						>
+						<option value="single">Soltero</option>
+						<option value="married">Casado</option>
+						<option value="divorced">Divorciado</option>
+						<option value="other">Otro</option>
+					</select>
+				</div>
+
+				<div class="space-y-2">
+					<label for="city" class="text-sm font-medium sr-only"
+						>Ciudad</label
+					>
+					<input
+						id="city"
+						name="city"
+						type="text"
+						placeholder="Ciudad de residencia"
+						required=""
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="login-email" class="text-sm font-medium sr-only"
+						>INE (número) / Pasaporte</label
+					>
+					<input
+						id="birthdate"
+						name="personalId"
+						type="text"
+						placeholder="Número de INE o Pasaporte"
+						required=""
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="address" class="text-sm font-medium sr-only"
+						>Dirección</label
+					>
+					<input
+						id="address"
+						name="address"
+						type="text"
+						placeholder="Calle, número, colonia"
+						required=""
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="zipcode" class="text-sm font-medium sr-only"
+						>Código postal</label
+					>
+					<input
+						id="zipcode"
+						name="zipcode"
+						type="number"
+						placeholder="Código Postal"
+						required=""
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="email" class="text-sm font-medium sr-only"
+						>E-mail</label
+					>
+					<input
+						id="email"
+						name="email"
+						type="email"
+						required=""
+						placeholder="Correo Electrónico"
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="cellphone" class="text-sm font-medium sr-only"
+						>Número Celular</label
+					>
+					<input
+						id="cellphone"
+						name="cellphone"
+						type="tel"
+						required=""
+						placeholder="Número Celular"
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="career" class="text-sm font-medium sr-only"
+						>Profesión</label
+					>
+					<input
+						id="career"
+						name="career"
+						type="text"
+						required=""
+						placeholder="Profesión u oficio"
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label
+						for="office-phone"
+						class="text-sm font-medium sr-only"
+						>Número Oficina</label
+					>
+					<input
+						id="office-phone"
+						name="office-phone"
+						type="text"
+						placeholder="Número Oficina"
+						class="form-input"
+					/>
+				</div>
+			</div>
+		</div>
+
+		<!-- Pesonal References -->
+		<div class="space-y-4 form-section-card">
+			<h3 class="text-xl font-semibold text-primary">
+				Referencias Personales
+			</h3>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div class="space-y-2">
+					<label for="fullname1" class="text-sm font-medium sr-only"
+						>Nombre Completo</label
+					>
+					<input
+						id="fullname1"
+						name="fullname1"
+						type="text"
+						placeholder="Referencia 1: Nombre Completo"
+						required=""
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="cellphone1" class="text-sm font-medium sr-only"
+						>Número Celular</label
+					>
+					<input
+						id="cellphone1"
+						name="cellphone1"
+						type="tel"
+						placeholder="Referencia 1: Número Celular"
+						required=""
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="fullname2" class="text-sm font-medium sr-only"
+						>Nombre Completo</label
+					>
+					<input
+						id="fullname2"
+						name="fullname2"
+						type="text"
+						placeholder="Referencia 2: Nombre Completo"
+						required=""
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="cellphone1" class="text-sm font-medium sr-only"
+						>Número Celular</label
+					>
+					<input
+						id="cellphone1"
+						name="cellphone1"
+						type="tel"
+						placeholder="Referencia 2: Número Celular"
+						required=""
+						class="form-input"
+					/>
+				</div>
+			</div>
+		</div>
+
+		<!-- Interview Questions -->
+		<div class="space-y-4 form-section-card">
+			<h3 class="text-xl font-semibold text-primary">Cuestionario</h3>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div class="space-y-2">
+					<label for="q1" class="text-md font-medium text-primary"
+						>¿Por qué desea adoptar una mascota?</label
+					>
+					<textarea
+						id="q1"
+						name="q1"
+						placeholder="Cuentanos de tu motivación..."
+						required=""
+						class="form-input !h-20"></textarea>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q2" class="text-md font-medium text-primary"
+						>¿Tienes más animalitos?</label
+					>
+
+					<br />
+
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q2_others_pets"
+							value="no"
+							required
+						/>
+						No</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q2_others_pets"
+							value="yes"
+							required
+						/>
+						Si</label
+					>
+					<label class="ml-2 text-sm font-medium">¿Cuales?</label>
+					<input
+						id="q2_which_pets"
+						name="q2_which_pets"
+						type="text"
+						class="w-full h-11 px-3 rounded-md border bg-background inline-block"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q2" class="text-md font-medium text-primary"
+						>Si los tiene, ¿están esterilizados?</label
+					>
+
+					<br />
+
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q3_esterilized"
+							value="yes"
+							required
+						/>
+						Si</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q3_esterilized"
+							value="no"
+							required
+						/>
+						No</label
+					>
+					<label class="ml-2 text-sm font-medium">¿Por qué?</label>
+					<input
+						id="q3_why_not_sterilized"
+						name="q3_why_not_sterilized"
+						type="text"
+						class="w-full h-11 px-3 rounded-md border bg-background inline-block"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q2" class="text-md font-medium text-primary"
+						>¿Anteriormente ha tenido otros animalitos?</label
+					>
+
+					<br />
+
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q4_had_other_pets"
+							value="no"
+							required
+						/>
+						No</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q4_had_other_pets"
+							value="yes"
+							required
+						/>
+						Si</label
+					>
+					<label class="ml-2 text-sm font-medium"
+						>¿Qué fue lo que pasó con él/ellos?</label
+					>
+					<textarea
+						id="q4_what_happened"
+						name="q4_what_happened"
+						class="w-full h-20 px-3 rounded-md border bg-background inline-block"
+					></textarea>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q4" class="text-md font-medium text-primary"
+						>¿Está de acuerdo con visitas periódicas a su domicilio?</label
+					>
+
+					<br />
+
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q4_allow_home_visits"
+							value="yes"
+							required
+						/>
+						Sí</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q4_allow_home_visits"
+							value="no"
+							required
+						/>
+						No</label
+					>
+					<label class="ml-2 text-sm font-medium">¿Por qué no?</label>
+					<textarea
+						id="q5_why_not_allow_home_visits"
+						name="q5_why_not_allow_home_visits"
+						class="w-full h-20 px-3 rounded-md border bg-background inline-block"
+					></textarea>
+				</div>
+
+				<div class="space-y-2">
+					<label
+						for="q7_persons"
+						class="text-md text-primary font-medium"
+						>¿Cuántas personas viven en casa?</label
+					>
+					<input
+						id="q7_persons"
+						name="q7_persons"
+						type="number"
+						min="1"
+						placeholder="Indica el número de personas incluyéndote"
+						required=""
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q8" class="text-md font-medium text-primary"
+						>¿Están todos de acuerdo en adoptar?</label
+					>
+
+					<br />
+
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q8_agree_adopt"
+							value="yes"
+							required
+						/>
+						Sí</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q8_agree_adopt"
+							value="no"
+							required
+						/>
+						No</label
+					>
+					<label class="ml-2 text-sm font-medium">Comentarios</label>
+					<textarea
+						id="q8_comments"
+						name="q8_comments"
+						class="w-full h-20 px-3 rounded-md border bg-background inline-block"
+					></textarea>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q9" class="text-md font-medium text-primary"
+						>¿Hay niños en casa?</label
+					>
+
+					<br />
+
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q9_children"
+							value="no"
+							required
+						/>
+						No</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q9_children"
+							value="yes"
+							required
+						/>
+						Sí</label
+					>
+					<label class="ml-2 text-sm font-medium">Edades</label>
+					<input
+						id="q9_children_ages"
+						name="q9_children_ages"
+						type="text"
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q10" class="text-md font-medium text-primary"
+						>¿Alguien en casa es alérgico a los animales o sufre de
+						asma?</label
+					>
+
+					<br />
+
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q10_allergic"
+							value="yes"
+							required
+						/>
+						Si</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q10_allergic"
+							value="no"
+							required
+						/>
+						No</label
+					>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q11" class="text-md font-medium text-primary"
+						>En caso de alquiler, ¿los arrendadores permiten
+						animalitos?</label
+					>
+
+					<br />
+
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q11_allowed_pets"
+							value="yes"
+							required
+						/>
+						Si</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q11_allowed_pets"
+							value="no"
+							required
+						/>
+						No</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q11_allowed_pets"
+							value="unkown"
+							required
+						/>
+						No sé</label
+					>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q12" class="text-md font-medium text-primary"
+						>Si tuviera que cambiar de domicilio, ¿qué pasaría con
+						el adoptable?</label
+					>
+					<textarea
+						id="q12"
+						name="q12"
+						placeholder="Explica qué harías en esta situación"
+						required=""
+						class="form-input !h-20"></textarea>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q13" class="text-md font-medium text-primary"
+						>En caso de ruptura familiar o llegada de un nuevo
+						integrante, ¿qué pasaría con el adoptable?</label
+					>
+					<textarea
+						id="q13"
+						name="q13"
+						placeholder="Explica qué harías en esta situación"
+						required=""
+						class="form-input !h-20"></textarea>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q14" class="text-md font-medium text-primary"
+						>¿Cuántos años cree que vive un gato/perro en promedio?</label
+					>
+					<input
+						id="q14"
+						name="q14"
+						placeholder="..."
+						required=""
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q15" class="text-md font-medium text-primary"
+						>¿Cómo se ve con su adoptado dentro de 5 años?</label
+					>
+					<textarea
+						id="q15"
+						name="q15"
+						placeholder="Cuentanos tu visión a futuro..."
+						required=""
+						class="form-input !h-20"></textarea>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q16" class="text-md font-medium text-primary"
+						>¿Tiene espacio suficiente para que el adoptable este
+						cómodo?</label
+					>
+
+					<br />
+
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q16_space_enough"
+							value="yes"
+							required
+						/>
+						Sí</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q16_space_enough"
+							value="no"
+							required
+						/>
+						No</label
+					>
+					<label class="ml-2 text-sm font-medium">Descripción</label>
+					<textarea
+						id="q16_description"
+						name="q16_description"
+						class="w-full h-20 px-3 rounded-md border bg-background inline-block"
+					></textarea>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q17" class="text-md font-medium text-primary"
+						>¿Dónde dormirá el adoptable?</label
+					>
+					<textarea
+						id="q17"
+						name="q17"
+						placeholder="..."
+						required=""
+						class="form-input !h-20"></textarea>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q18" class="text-md font-medium text-primary"
+						>¿Cuánto tiempo pasará solo el adoptable?</label
+					>
+					<textarea
+						id="q18"
+						name="q18"
+						placeholder="..."
+						required=""
+						class="form-input !h-20"></textarea>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q19" class="text-md font-medium text-primary"
+						>Si el comportamiento del animalito no es el que desea,
+						¿qué medidas tomaría?</label
+					>
+					<textarea
+						id="q19"
+						name="q19"
+						placeholder="Explicanos qué harías en esta situación"
+						required=""
+						class="form-input !h-20"></textarea>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q20" class="text-md font-medium text-primary"
+						>Señale la cantidad que cree que se gasta en un gato al
+						mes</label
+					>
+
+					<br />
+
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q20_budget"
+							value="100_300"
+							required
+						/>
+						$100–$300</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q20_budget"
+							value="301_500"
+							required
+						/>
+						$301-$500</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q20_budget"
+							value="501_700"
+							required
+						/>
+						$501-$700</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q20_budget"
+							value="more_than_700"
+							required
+						/>
+						Más de $700</label
+					>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q21" class="text-md font-medium text-primary"
+						>¿Quién será el responsable de cubrir los gastos del
+						adoptable?</label
+					>
+					<input
+						id="q21"
+						name="q21"
+						type="text"
+						placeholder="..."
+						required=""
+						class="form-input"
+					/>
+				</div>
+			</div>
+
+			<h3 class="text-primary text-lg">Cuidados que brindarán</h3>
+
+			<div
+				class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2 pb-4"
+			>
+				<div class="space-y-2">
+					<label
+						><input
+							type="checkbox"
+							name="p22_cuidados"
+							value="veterinario_periodico"
+						/> Visitas periódicas al veterinario</label
+					>
+				</div>
+				{pet.species === "cat" && (
+					<div class="space-y-2">
+						<label
+							><input
+								type="checkbox"
+								name="p22_cuidados"
+								value="arenero_diario"
+							/> Limpieza diaria de arenero</label
+						>
+					</div>
+
+					<div class="space-y-2">
+						<label>
+							<input
+								type="checkbox"
+								name="p22_cuidados"
+								value="interior"
+							/>{" "}
+							Gato de interior, sin salir de casa
+						</label>
+					</div>
+				)}
+				<div class="space-y-2">
+					<label
+						><input
+							type="checkbox"
+							name="p22_cuidados"
+							value="placa_identificacion"
+						/> Collar con placa de identificación</label
+					>
+				</div>
+				<div class="space-y-2">
+					<label
+						><input
+							type="checkbox"
+							name="p22_cuidados"
+							value="agua_diaria"
+						/> Agua limpia todos los días</label
+					>
+				</div>
+				<div class="space-y-2">
+					<label
+						><input
+							type="checkbox"
+							name="p22_cuidados"
+							value="desparasitacion"
+						/> Desparasitación</label
+					>
+				</div>
+				<div class="space-y-2">
+					<label
+						><input
+							type="checkbox"
+							name="p22_cuidados"
+							value="cepillado"
+						/>
+						Cepillado de pelo</label
+					>
+				</div>
+				<div class="space-y-2">
+					<label
+						><input
+							type="checkbox"
+							name="p22_cuidados"
+							value="alimentacion_adecuada"
+						/> Alimentación adecuada (edad)</label
+					>
+				</div>
+				<div class="space-y-2">
+					<label
+						><input
+							type="checkbox"
+							name="p22_cuidados"
+							value="vacunacion_anual"
+						/> Vacunación anual</label
+					>
+				</div>
+				{
+					pet.species === "dog" && (
+						<div class="space-y-2">
+							<label>
+								<input
+									type="checkbox"
+									name="p23_cuidados"
+									value="paseos_diarios"
+								/>{" "}
+								Paseos diarios con correa
+							</label>
+						</div>
+					)
+				}
+
+				<div class="space-y-2">
+					<label>
+						<input
+							type="checkbox"
+							name="p23_cuidados"
+							value="necesidades_especie"
+						/>{" "}
+						Respetar las necesidades de la especie
+					</label>
+				</div>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div class="space-y-2">
+					<label for="q23" class="text-md font-medium text-primary"
+						>¿Tiene médico veterinario de cabecera?</label
+					>
+
+					<br />
+
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q23_veterinary"
+							value="yes"
+							required
+						/>
+						Sí</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q23_veterinary"
+							value="no"
+							required
+						/>
+						No</label
+					>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q24" class="text-md font-medium text-primary"
+						>Nombre del médico veterinario y teléfono</label
+					>
+					<input
+						id="q24"
+						name="q24"
+						type="text"
+						placeholder="Nombre completo"
+						class="form-input"
+					/>
+
+					<input
+						id="q24"
+						name="q24"
+						type="tel"
+						placeholder="Teléfono"
+						class="form-input"
+					/>
+				</div>
+
+				<div class="space-y-2">
+					<label for="q25" class="text-md font-medium text-primary"
+						>¿Cuenta con recursos para cubrir gastos veterinarios?</label
+					>
+
+					<br />
+
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q25_resources"
+							value="yes"
+							required
+						/>
+						Sí</label
+					>
+					<label class="text-sm font-medium"
+						><input
+							type="radio"
+							name="q25_resources"
+							value="no"
+							required
+						/>
+						No</label
+					>
+					<label class="ml-2 text-sm font-medium">Detalles</label>
+					<textarea
+						id="q25_details"
+						name="q25_details"
+						class="w-full h-20 px-3 rounded-md border bg-background inline-block"
+					></textarea>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Agreements -->
+		<div class="space-y-4 form-section-card">
+			<h3 class="text-xl font-semibold text-primary">
+				Condiciones y compromisos de adopción
+			</h3>
+
+			<ol class="list-disc mr-4 ps-4">
+				<li>El adoptable se entregará al adoptante una vez aprobada esta solicitud y habiendo recibido copia de comprobante de domicilio, identificación oficial y fotos del domicilio que será el nuevo hogar del adoptable.</li>
+				<li>El adoptable se entregará para un periodo de prueba a convenir, después de la cual se entrará nuevamente en contacto con el adoptante para preguntar sobre el acoplamiento de ambos.</li>
+				<li>La protectora entrega copia firmada de este documento al adoptante y el carnet original de vacunaciones y estado de salud del ejemplar.</li>
+				<li>El adoptante se compromete a recibir la visita de la protectora que verificará el estado del adoptable, sin previa cita. Aclarando que si el protector detecta cualquier irregularidad que vaya en contra de lo aquí estipulado, tiene la facultad de realizar la recuperación del adoptable. Sanciones puede aplicar si el adoptable se entrega con muestras de maltrato o descuido a su salud.</li>
+			</ol>
+		</div>
+
+		<!-- Accept and documents -->
+		<div class="space-y-4 form-section-card">
+			<h3 class="text-xl font-semibold text-primary">
+				Aceptación de términos de esta solicitud
+			</h3>
+
+			<p class="text-primary">
+				Es obligatorio aceptar los términos para continuar con el
+				proceso de adopción. Los datos proporcionados en este formulario
+				serán verificados y cualquier falsedad o inconsistencia puede
+				resultar en la cancelación de la solicitud. Esta solicitud no
+				representa un compromiso de adopción hasta que sea revisada y
+				aprobada por <strong>{organization.name}</strong>. Nos
+				reservamos el derecho de rechazar la solicitud sin necesidad de
+				justificación adicional.
+			</p>
+
+			<div class="flex flex-col md:flex-row justify-between gap-2">
+				<div>
+					<label class="text-primary text-md font-semibold"
+						><input
+							type="checkbox"
+							name="aceptoCondiciones"
+							value="si"
+							required
+						/> Confirmo que acepto las condiciones de adopción.</label
+					>
+				</div>
+				<div>
+					<label class="text-primary text-md font-semibold"
+						><input
+							type="checkbox"
+							name="informacionVeraz"
+							value="si"
+							required
+						/> Doy fé que toda la información suministrada es veraz y
+						verificable.</label
+					>
+				</div>
+			</div>
+
+			<fieldset>
+				<label class="text-primary text-md"
+					>Adjuntar copia de INE/Pasaporte (En formato PDF o imagen)
+					<input
+						class="form-input mt-2"
+						name="ine_archivo"
+						type="file"
+						accept="image/*,.pdf"
+					/>
+				</label>
+			</fieldset>
+		</div>
+
+		<button class="btn btn-primary" type="submit">Enviar solicitud</button>
+	</form>
+</div>
+
+<script>
+  import { actions } from 'astro:actions';
+
+  const form = document.getElementById('submit-adoption-form') as HTMLFormElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    const { data, error } = await actions.adoption_request(formData);
+
+    if (data?.success) {
+      window.location.href = `${window.location.pathname}?success=true`;
+    }
+  });
+</script>

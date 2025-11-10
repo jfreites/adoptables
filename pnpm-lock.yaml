@@ -11,6 +11,9 @@ importers:
       '@astrojs/netlify':
         specifier: ^6.5.13
         version: 6.5.13(@types/node@24.7.0)(astro@5.14.1(@netlify/blobs@10.2.1)(@types/node@24.7.0)(jiti@2.6.1)(lightningcss@1.30.1)(rollup@4.52.4)(typescript@5.9.3)(yaml@2.8.1))(jiti@2.6.1)(lightningcss@1.30.1)(rollup@4.52.4)(yaml@2.8.1)
+      '@lucide/astro':
+        specifier: ^0.552.0
+        version: 0.552.0(astro@5.14.1(@netlify/blobs@10.2.1)(@types/node@24.7.0)(jiti@2.6.1)(lightningcss@1.30.1)(rollup@4.52.4)(typescript@5.9.3)(yaml@2.8.1))
       '@midudev/tailwind-animations':
         specifier: github:midudev/tailwind-animations
         version: https://codeload.github.com/midudev/tailwind-animations/tar.gz/dadf49850b0ea95ac62960e82dc3e4fb59b3eaed(tailwindcss@4.1.14)
@@ -423,6 +426,11 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@lucide/astro@0.552.0':
+    resolution: {integrity: sha512-nPO3RPor+3eOeom+KDmNGDSLYec5DYn5jc085FNNqIpUkl6kH8wnxZhtd53aGJleYrUt3/xIbwLxsrU1cm6epg==}
+    peerDependencies:
+      astro: ^4 || ^5
 
   '@mapbox/node-pre-gyp@2.0.0':
     resolution: {integrity: sha512-llMXd39jtP0HpQLVI37Bf1m2ADlEb35GYSh1SDSLsBhR+5iCxiNGlT31yqbNtVHygHAtMy6dWFERpU2JgufhPg==}
@@ -3789,6 +3797,10 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@lucide/astro@0.552.0(astro@5.14.1(@netlify/blobs@10.2.1)(@types/node@24.7.0)(jiti@2.6.1)(lightningcss@1.30.1)(rollup@4.52.4)(typescript@5.9.3)(yaml@2.8.1))':
+    dependencies:
+      astro: 5.14.1(@netlify/blobs@10.2.1)(@types/node@24.7.0)(jiti@2.6.1)(lightningcss@1.30.1)(rollup@4.52.4)(typescript@5.9.3)(yaml@2.8.1)
 
   '@mapbox/node-pre-gyp@2.0.0':
     dependencies:

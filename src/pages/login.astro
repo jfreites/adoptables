@@ -3,6 +3,11 @@ import Layout from "@/layouts/Layout.astro";
 import type { AstroCookieSetOptions } from "astro";
 import { actions } from "astro:actions";
 
+// Si ya está autenticado, redirigir
+if (Astro.locals.user) {
+	return Astro.redirect("/dashboard");
+}
+
 const result = Astro.getActionResult(actions.login);
 const isSuccess = result && !result.error;
 const error = result?.error;
@@ -17,21 +22,21 @@ const url = new URL(Astro.request.url);
 const next = url.searchParams.get('next') ?? '/dashboard';
 
 // If login is successful, set cookies and redirect
-if (isSuccess && data?.session) {
-  const cookieConf: AstroCookieSetOptions = {
-    path: '/',
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    httpOnly: true,
-    secure: import.meta.env.PROD,
-    sameSite: 'lax'
-  }
+// if (isSuccess && data?.session) {
+//   const cookieConf: AstroCookieSetOptions = {
+//     path: '/',
+//     maxAge: 60 * 60 * 24 * 7, // 7 days
+//     httpOnly: true,
+//     secure: import.meta.env.PROD,
+//     sameSite: 'lax'
+//   }
 
-  Astro.cookies.set('sb-access-token', data.session.access_token, cookieConf);
+//   Astro.cookies.set('sb-access-token', data.session.access_token, cookieConf);
 
-  Astro.cookies.set('sb-refresh-token', data.session.refresh_token, cookieConf);
+//   Astro.cookies.set('sb-refresh-token', data.session.refresh_token, cookieConf);
 
-  return Astro.redirect(next || '/dashboard');
-}
+//   return Astro.redirect(next || '/dashboard');
+// }
 ---
 
 <Layout>
@@ -83,10 +88,6 @@ if (isSuccess && data?.session) {
 
       <!-- Login Card -->
       <section class="border-2 rounded-3xl bg-card text-card-foreground">
-        <!-- <header class="p-6 border-b">
-          <h1 class="text-2xl font-bold">Bienvenido de vuelta</h1>
-          <p class="text-muted-foreground">Inicia sesión en tu cuenta</p>
-        </header> -->
         <div class="p-6 space-y-4">
           <form method="POST" action={actions.login} class="space-y-4" data-loading>
             <input type="hidden" name="remember" value="true" />
@@ -155,97 +156,8 @@ if (isSuccess && data?.session) {
                 <span data-text="loading" class="hidden">Iniciando sesión...</span>
             </button>
           </form>
-
-          <!-- Separator -->
-          <!-- <div class="relative">
-            <div class="absolute inset-0 flex items-center"><hr class="w-full border" /></div>
-            <div class="relative flex justify-center text-xs uppercase">
-              <span class="bg-card px-2 text-muted-foreground">Or continue with</span>
-            </div>
-          </div> -->
         </div>
       </section>
-
-      <!-- <form method="POST" action={actions.login} class="mt-8 space-y-6">
-        <input type="hidden" name="remember" value="true" />
-        <div class="rounded-md shadow-sm -space-y-px">
-          <div>
-            <label for="email2" class="sr-only">
-              Correo electrónico
-            </label>
-            <input
-              id="email2"
-              name="email2"
-              type="email"
-              autocomplete="email2"
-              required
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Correo electrónico"
-              value={Astro.url.searchParams.get('email') || ''}
-            />
-          </div>
-          <div>
-            <label for="password" class="sr-only">
-              Contraseña
-            </label>
-            <input
-              id="password2"
-              name="password2"
-              type="password"
-              autocomplete="current-password2"
-              required
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Contraseña"
-            />
-          </div>
-        </div>
-
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <input
-              id="remember-me"
-              name="remember-me"
-              type="checkbox"
-              class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-            />
-            <label for="remember-me" class="ml-2 block text-sm text-gray-900">
-              Recordarme
-            </label>
-          </div>
-
-          <div class="text-sm">
-            <a href="/forgot-password" class="font-medium text-indigo-600 hover:text-indigo-500">
-              ¿Olvidaste tu contraseña?
-            </a>
-          </div>
-        </div>
-
-        <div>
-          <button
-            type="submit"
-            id="login-btn2"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-              <svg
-                class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </span>
-            <span data-text="default">Iniciar sesión</span>
-            <span data-text="loading" class="hidden">Iniciando sesión...</span>
-          </button>
-        </div>
-      </form> -->
 
       <div class="text-center">
         <p class="text-sm text-gray-600">

@@ -1,36 +1,68 @@
 import { defineMiddleware } from "astro:middleware";
+import { supabase } from "@/lib/supabase";
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  const { url, cookies } = context;
-  const pathname = url.pathname;
+	const accessToken = context.cookies.get("sb-access-token")?.value;
+	const refreshToken = context.cookies.get("sb-refresh-token")?.value;
 
-  // Define protected routes that require authentication
-  const protectedRoutes = ['/dashboard', '/profile', '/applications', '/favorites', '/publicar-adoptable'];
+	if (accessToken && refreshToken) {
+		// Intentar usar el access token actual
+		const { data, error } = await supabase.auth.setSession({
+			access_token: accessToken,
+			refresh_token: refreshToken,
+		});
 
-  // Define auth routes (redirect if already authenticated)
-  const authRoutes = ['/login', '/register'];
+		if (error) {
+			// Si el token expiró, intentar refrescar
+			const { data: refreshData, error: refreshError } =
+				await supabase.auth.refreshSession({
+					refresh_token: refreshToken,
+				});
 
-  // Check if current route is protected
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+			if (refreshError || !refreshData.session) {
+				// Tokens inválidos, limpiar cookies
+				context.cookies.delete("sb-access-token", { path: "/" });
+				context.cookies.delete("sb-refresh-token", { path: "/" });
+				context.locals.user = null;
+				context.locals.session = null;
+			} else {
+				// Actualizar cookies con nuevos tokens
+				context.cookies.set(
+					"sb-access-token",
+					refreshData.session.access_token,
+					{
+						path: "/",
+						maxAge: 60 * 60 * 24 * 7,
+						httpOnly: true,
+						secure: import.meta.env.PROD,
+						sameSite: "lax",
+					},
+				);
 
-  // Check if current route is an auth route
-  const isAuthRoute = authRoutes.includes(pathname);
+				context.cookies.set(
+					"sb-refresh-token",
+					refreshData.session.refresh_token,
+					{
+						path: "/",
+						maxAge: 60 * 60 * 24 * 30,
+						httpOnly: true,
+						secure: import.meta.env.PROD,
+						sameSite: "lax",
+					},
+				);
 
-  // Get tokens from cookies for auth check
-  const accessToken = cookies.get('sb-access-token')?.value;
-  const refreshToken = cookies.get('sb-refresh-token')?.value;
+				context.locals.user = refreshData.user;
+				context.locals.session = refreshData.session;
+			}
+		} else if (data.session) {
+			// Sesión válida
+			context.locals.user = data.user;
+			context.locals.session = data.session;
+		}
+	} else {
+		context.locals.user = null;
+		context.locals.session = null;
+	}
 
-  const hasValidTokens = accessToken && refreshToken;
-
-  // Redirect authenticated users away from auth routes
-  if (isAuthRoute && hasValidTokens) {
-    return context.redirect('/dashboard');
-  }
-
-  // Redirect unauthenticated users from protected routes
-  if (isProtectedRoute && !hasValidTokens) {
-    return context.redirect('/login?next=' + pathname);
-  }
-
-  return next();
+	return next();
 });
