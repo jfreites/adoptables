@@ -2,7 +2,6 @@ import { ActionError, defineAction } from "astro:actions";
 import { z } from "astro:schema";
 import {
 	publishPetForAdoption,
-	listAvailablePets,
 	uploadPetImages,
 	getPetBySlug,
 	getRecentPets,
@@ -100,31 +99,6 @@ export const server = {
 			return {
 				success: true,
 				message: "publicaste un adoptable",
-			};
-		},
-	}),
-	listing_pets: defineAction({
-		input: z.object({
-			filter: z.array(z.string()),
-			total: z.number(),
-		}),
-		async handler({ filter, total = 0 }) {
-			const { data, pagination, success, error } = await listAvailablePets(
-				filter,
-				total,
-			);
-
-			if (!success) {
-				throw new ActionError({
-					code: "BAD_REQUEST",
-					message: error ?? "Error obteniendo adoptables",
-				});
-			}
-
-			return {
-				success: true,
-				data,
-				pagination,
 			};
 		},
 	}),
