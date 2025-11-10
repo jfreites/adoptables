@@ -1,157 +1,212 @@
 @import "tailwindcss";
 @plugin "tailwindcss-animate";
 
-
 @theme {
-  --radius: 1rem;                    /* base token */
-  --radius-lg: var(--radius);        /* lg: var(--radius) */
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-full: 9999px;
+	--radius: 1rem; /* base token */
+	--radius-lg: var(--radius); /* lg: var(--radius) */
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-full: 9999px;
 
-  /* Fonts (maps old theme.extend.fontFamily) */
-  --font-quicksand: Quicksand, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+	/* Fonts (maps old theme.extend.fontFamily) */
+	--font-quicksand:
+		Quicksand, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter,
+		"Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
 
-  /* Colors (Tailwind v4 color tokens become classes like bg-background, text-foreground, border-border, etc.) */
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-sidebar: hsl(var(--sidebar-background));
-  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
-  --color-sidebar-primary: hsl(var(--sidebar-primary));
-  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
-  --color-sidebar-accent: hsl(var(--sidebar-accent));
-  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
-  --color-sidebar-border: hsl(var(--sidebar-border));
-  --color-sidebar-ring: hsl(var(--sidebar-ring));
+	/* Colors (Tailwind v4 color tokens become classes like bg-background, text-foreground, border-border, etc.) */
+	--color-border: hsl(var(--border));
+	--color-input: hsl(var(--input));
+	--color-ring: hsl(var(--ring));
+	--color-background: hsl(var(--background));
+	--color-foreground: hsl(var(--foreground));
+	--color-primary: hsl(var(--primary));
+	--color-primary-foreground: hsl(var(--primary-foreground));
+	--color-secondary: hsl(var(--secondary));
+	--color-secondary-foreground: hsl(var(--secondary-foreground));
+	--color-destructive: hsl(var(--destructive));
+	--color-destructive-foreground: hsl(var(--destructive-foreground));
+	--color-muted: hsl(var(--muted));
+	--color-muted-foreground: hsl(var(--muted-foreground));
+	--color-accent: hsl(var(--accent));
+	--color-accent-foreground: hsl(var(--accent-foreground));
+	--color-popover: hsl(var(--popover));
+	--color-popover-foreground: hsl(var(--popover-foreground));
+	--color-card: hsl(var(--card));
+	--color-card-foreground: hsl(var(--card-foreground));
+	--color-sidebar: hsl(var(--sidebar-background));
+	--color-sidebar-foreground: hsl(var(--sidebar-foreground));
+	--color-sidebar-primary: hsl(var(--sidebar-primary));
+	--color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+	--color-sidebar-accent: hsl(var(--sidebar-accent));
+	--color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+	--color-sidebar-border: hsl(var(--sidebar-border));
+	--color-sidebar-ring: hsl(var(--sidebar-ring));
 
-  /* Animations (maps old extend.animation) */
-  --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up 0.2s ease-out;
+	/* Animations (maps old extend.animation) */
+	--animate-accordion-down: accordion-down 0.2s ease-out;
+	--animate-accordion-up: accordion-up 0.2s ease-out;
 }
 
-@keyframes accordion-down { from { height: 0 } to { height: var(--radix-accordion-content-height) } }
-@keyframes accordion-up { from { height: var(--radix-accordion-content-height) } to { height: 0 } }
+@keyframes accordion-down {
+	from {
+		height: 0;
+	}
+	to {
+		height: var(--radix-accordion-content-height);
+	}
+}
+@keyframes accordion-up {
+	from {
+		height: var(--radix-accordion-content-height);
+	}
+	to {
+		height: 0;
+	}
+}
 
 @layer base {
-  :root {
-    --background: 280 30% 98%;
-    --foreground: 280 20% 15%;
+	:root {
+		--background: 280 30% 98%;
+		--foreground: 280 20% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 280 20% 15%;
+		--card: 0 0% 100%;
+		--card-foreground: 280 20% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 280 20% 15%;
+		--popover: 0 0% 100%;
+		--popover-foreground: 280 20% 15%;
 
-    --primary: 265 35% 70%;
-    --primary-foreground: 0 0% 100%;
+		--primary: 265 35% 70%;
+		--primary-foreground: 0 0% 100%;
 
-    --secondary: 25 100% 87%;
-    --secondary-foreground: 280 20% 15%;
+		--secondary: 25 100% 87%;
+		--secondary-foreground: 280 20% 15%;
 
-    --muted: 265 25% 95%;
-    --muted-foreground: 280 15% 45%;
+		--muted: 265 25% 95%;
+		--muted-foreground: 280 15% 45%;
 
-    --accent: 150 45% 85%;
-    --accent-foreground: 280 20% 15%;
+		--accent: 150 45% 85%;
+		--accent-foreground: 280 20% 15%;
 
-    --destructive: 0 75% 65%;
-    --destructive-foreground: 0 0% 100%;
+		--destructive: 0 75% 65%;
+		--destructive-foreground: 0 0% 100%;
 
-    --border: 265 20% 90%;
-    --input: 265 20% 92%;
-    --ring: 265 35% 70%;
+		--border: 265 20% 90%;
+		--input: 265 20% 92%;
+		--ring: 265 35% 70%;
 
-    --radius: 1rem;
+		--radius: 1rem;
 
-    --gradient-primary: linear-gradient(135deg, hsl(265 35% 70%), hsl(150 45% 85%));
-    --gradient-hero: linear-gradient(180deg, hsl(280 30% 98%), hsl(265 25% 95%));
-    --shadow-soft: 0 8px 30px -8px hsl(265 35% 70% / 0.2);
-    --shadow-card: 0 4px 20px -4px hsl(265 20% 50% / 0.15);
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		--gradient-primary: linear-gradient(
+			135deg,
+			hsl(265 35% 70%),
+			hsl(150 45% 85%)
+		);
+		--gradient-hero: linear-gradient(
+			180deg,
+			hsl(280 30% 98%),
+			hsl(265 25% 95%)
+		);
+		--shadow-soft: 0 8px 30px -8px hsl(265 35% 70% / 0.2);
+		--shadow-card: 0 4px 20px -4px hsl(265 20% 50% / 0.15);
+		--transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+		--sidebar-background: 0 0% 98%;
+		--sidebar-foreground: 240 5.3% 26.1%;
+		--sidebar-primary: 240 5.9% 10%;
+		--sidebar-primary-foreground: 0 0% 98%;
+		--sidebar-accent: 240 4.8% 95.9%;
+		--sidebar-accent-foreground: 240 5.9% 10%;
+		--sidebar-border: 220 13% 91%;
+		--sidebar-ring: 217.2 91.2% 59.8%;
+	}
 
-  .dark {
-    --background: 280 25% 12%;
-    --foreground: 280 10% 95%;
+	.dark {
+		--background: 280 25% 12%;
+		--foreground: 280 10% 95%;
 
-    --card: 280 20% 15%;
-    --card-foreground: 280 10% 95%;
+		--card: 280 20% 15%;
+		--card-foreground: 280 10% 95%;
 
-    --popover: 280 20% 15%;
-    --popover-foreground: 280 10% 95%;
+		--popover: 280 20% 15%;
+		--popover-foreground: 280 10% 95%;
 
-    --primary: 265 40% 65%;
-    --primary-foreground: 0 0% 100%;
+		--primary: 265 40% 65%;
+		--primary-foreground: 0 0% 100%;
 
-    --secondary: 25 70% 50%;
-    --secondary-foreground: 0 0% 100%;
+		--secondary: 25 70% 50%;
+		--secondary-foreground: 0 0% 100%;
 
-    --muted: 280 15% 20%;
-    --muted-foreground: 280 10% 65%;
+		--muted: 280 15% 20%;
+		--muted-foreground: 280 10% 65%;
 
-    --accent: 150 40% 45%;
-    --accent-foreground: 0 0% 100%;
+		--accent: 150 40% 45%;
+		--accent-foreground: 0 0% 100%;
 
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 0 0% 100%;
+		--destructive: 0 75% 55%;
+		--destructive-foreground: 0 0% 100%;
 
-    --border: 280 15% 25%;
-    --input: 280 15% 25%;
-    --ring: 265 40% 65%;
+		--border: 280 15% 25%;
+		--input: 280 15% 25%;
+		--ring: 265 40% 65%;
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+		--sidebar-background: 240 5.9% 10%;
+		--sidebar-foreground: 240 4.8% 95.9%;
+		--sidebar-primary: 224.3 76.3% 48%;
+		--sidebar-primary-foreground: 0 0% 100%;
+		--sidebar-accent: 240 3.7% 15.9%;
+		--sidebar-accent-foreground: 240 4.8% 95.9%;
+		--sidebar-border: 240 3.7% 15.9%;
+		--sidebar-ring: 217.2 91.2% 59.8%;
+	}
 }
 
 /* Global element styles */
 @layer base {
-  *, ::before, ::after { @apply border-border; }
-  body { @apply bg-background text-foreground font-quicksand; }
-  h1, h2, h3, h4, h5, h6 { @apply font-semibold; }
+	*,
+	::before,
+	::after {
+		@apply border-border;
+	}
+	body {
+		@apply bg-background text-foreground font-quicksand;
+	}
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		@apply font-semibold;
+	}
 }
 
 /* Optional: mimic your old container config (center + padding + 2xl = 1400px) */
 @layer utilities {
-  .container {
-    width: 100%;
-    margin-inline: auto;
-    padding-inline: 2rem; /* same as old padding */
-  }
-  @media (min-width: 1536px) { /* 2xl */
-    .container { max-width: 1400px; } /* from old config.screens["2xl"] */
-  }
+	.container {
+		width: 100%;
+		margin-inline: auto;
+		padding-inline: 2rem; /* same as old padding */
+	}
+	@media (min-width: 1536px) {
+		/* 2xl */
+		.container {
+			max-width: 1400px;
+		} /* from old config.screens["2xl"] */
+	}
+}
+
+.btn {
+	@apply inline-flex items-center justify-center gap-2 rounded-2xl
+         px-5 py-3 font-medium transition-colors duration-200;
+}
+.btn-primary {
+	@apply bg-primary text-primary-foreground hover:bg-primary/90;
+}
+
+.form-input {
+	@apply w-full h-11 px-3 rounded-md border bg-background;
+}
+
+.form-section-card {
+	@apply border-2 rounded-3xl bg-card text-card-foreground p-6;
 }

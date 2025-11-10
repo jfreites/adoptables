@@ -360,4 +360,30 @@ export const server = {
 			};
 		},
 	}),
+	adoption_request: defineAction({
+		accept: "form",
+		input: z.object({
+			pet_id: z.string().uuid(),
+			name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+		}),
+		handler: async (input, context) => {
+			console.log(input);
+			// Aquí iría la lógica para crear una solicitud de adopción
+			// Por simplicidad, asumiremos que la función existe y funciona correctamente
+
+			// const { success, error } = await createAdoptionRequest(pet_id, user_id, message);
+
+			// if (!success) {
+			// 	throw new ActionError({
+			// 		code: "BAD_REQUEST",
+			// 		message: error ?? "Error al enviar la solicitud de adopción",
+			// 	});
+			// }
+
+			return {
+				success: true,
+				message: "Solicitud de adopción enviada exitosamente",
+			};
+		},
+	}),
 };

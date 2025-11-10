@@ -1,19 +1,19 @@
 import { supabase } from "./supabase";
-import type { Pet, PetAdoptionRule } from "./types";
+import type { Organization, Pet, PetAdoptionRule } from "./types";
 
-export async function fetchPetAndRule(
+export async function fetchPetAndRules(
 	petSlug: string,
-): Promise<{ pet: Pet; rule?: PetAdoptionRule }> {
+): Promise<{ pet?: Pet; rule?: PetAdoptionRule; organization?: Organization }> {
 	const { data, error } = await supabase
 		.from("pets")
-		.select("id, slug, name, species, rules:pet_adoption_rules(*)")
-		//.eq('slug', petSlug)
-		.eq("id", 1)
+		.select(
+			"id, slug, name, species, rules:pet_adoption_rules(*), organizations(id, slug, name, type)",
+		)
+		.eq("slug", petSlug)
 		.single();
 
-	console.log(data, error);
-
-	if (error || !data) throw new Error("Pet not found");
+	// Pet not found or with invalid data, return empty results
+	if (error || !data) return { pet: null, rule: null, organization: null };
 
 	const pet: Pet = {
 		id: data.id,
@@ -21,9 +21,17 @@ export async function fetchPetAndRule(
 		name: data.name,
 		species: data.species,
 	};
+
 	const rule = (data as any).rules as PetAdoptionRule | undefined;
 
-	return { pet, rule };
+	const organization: Organization = {
+		id: data.organizations.id,
+		slug: data.organizations.slug,
+		name: data.organizations.name,
+		type: data.organizations.type,
+	};
+
+	return { pet, rule, organization };
 }
 
 export async function uploadDocuments(
@@ -98,3 +106,32 @@ export const getPetImageUrl = (path: string): string => {
 
 	return data.publicUrl;
 };
+
+export enum PetSizeDbValue {
+	SMALL = "small",
+	MEDIUM = "medium",
+	LARGE = "large",
+}
+
+export type PetSizeHumanReadable = "Pequeño" | "Mediano" | "Grande";
+
+const PetSizeMap: Record<PetSizeDbValue, PetSizeHumanReadable> = {
+	[PetSizeDbValue.SMALL]: "Pequeño",
+	[PetSizeDbValue.MEDIUM]: "Mediano",
+	[PetSizeDbValue.LARGE]: "Grande",
+};
+
+/**
+ * Translates a database Pet Species value to a human-readable string.
+ * @param dbValue The status code from the database.
+ * @returns The human-readable string, or 'Unknown' if the value is not found.
+ */
+export function translatePetSpecies(
+	dbValue: PetSizeDbValue,
+): PetSizeHumanReadable | "Desconocido" {
+	// Use the lookup map to get the translated value
+	const humanReadableValue = PetSizeMap[dbValue];
+
+	// Return the value, or a default 'Unknown' for safety
+	return humanReadableValue || "Desconocido";
+}
