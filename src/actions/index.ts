@@ -337,26 +337,189 @@ export const server = {
 	adoption_request: defineAction({
 		accept: "form",
 		input: z.object({
-			pet_id: z.string().uuid(),
+			// Pet
+			pet_id: z.string().uuid("ID de mascota inválido"),
+			
+			// Personal Information
 			name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+			lastname: z.string().min(2, "El apellido debe tener al menos 2 caracteres"),
+			birthdate: z.string().min(1, "La fecha de nacimiento es requerida"),
+			status: z.enum(["single", "married", "divorced", "other"], {
+				errorMap: () => ({ message: "Selecciona un estado civil válido" }),
+			}),
+			city: z.string().min(2, "La ciudad es requerida"),
+			personalId: z.string().min(5, "El número de INE/Pasaporte es requerido"),
+			address: z.string().min(5, "La dirección es requerida"),
+			zipcode: z.string().min(4, "El código postal es requerido"),
+			email: z.string().email("Email inválido"),
+			cellphone: z.string().min(10, "El número celular debe tener al menos 10 dígitos"),
+			career: z.string().min(2, "La profesión es requerida"),
+			"office-phone": z.string().optional(),
+			
+			// Personal References
+			fullname1: z.string().min(3, "El nombre de la referencia 1 es requerido"),
+			cellphone1: z.string().min(10, "El teléfono de la referencia 1 es requerido"),
+			fullname2: z.string().min(3, "El nombre de la referencia 2 es requerido"),
+			cellphone2: z.string().min(10, "El teléfono de la referencia 2 es requerido"),
+			
+			// Questionnaire
+			q1: z.string().min(10, "Por favor explica tu motivación"),
+			q2_others_pets: z.enum(["yes", "no"], { errorMap: () => ({ message: "Respuesta requerida" }) }),
+			q2_which_pets: z.string().optional(),
+			q3_esterilized: z.enum(["yes", "no"], { errorMap: () => ({ message: "Respuesta requerida" }) }),
+			q3_why_not_sterilized: z.string().optional(),
+			q4_had_other_pets: z.enum(["yes", "no"], { errorMap: () => ({ message: "Respuesta requerida" }) }),
+			q4_what_happened: z.string().optional(),
+			q4_allow_home_visits: z.enum(["yes", "no"], { errorMap: () => ({ message: "Respuesta requerida" }) }),
+			q5_why_not_allow_home_visits: z.string().optional(),
+			q7_persons: z.coerce.number().min(1, "Debe haber al menos 1 persona"),
+			q8_agree_adopt: z.enum(["yes", "no"], { errorMap: () => ({ message: "Respuesta requerida" }) }),
+			q8_comments: z.string().optional(),
+			q9_children: z.enum(["yes", "no"], { errorMap: () => ({ message: "Respuesta requerida" }) }),
+			q9_children_ages: z.string().optional(),
+			q10_allergic: z.enum(["yes", "no"], { errorMap: () => ({ message: "Respuesta requerida" }) }),
+			q11_allowed_pets: z.enum(["yes", "no", "unkown"], { errorMap: () => ({ message: "Respuesta requerida" }) }),
+			q12: z.string().min(10, "Por favor explica qué harías"),
+			q13: z.string().min(10, "Por favor explica qué harías"),
+			q14: z.string().min(1, "Esta respuesta es requerida"),
+			q15: z.string().min(10, "Por favor comparte tu visión"),
+			q16_space_enough: z.enum(["yes", "no"], { errorMap: () => ({ message: "Respuesta requerida" }) }),
+			q16_description: z.string().optional(),
+			q17: z.string().min(5, "Por favor describe dónde dormirá"),
+			q18: z.string().min(5, "Por favor indica cuánto tiempo estará solo"),
+			q19: z.string().min(10, "Por favor explica qué medidas tomarías"),
+			q20_budget: z.enum(["100_300", "301_500", "501_700", "more_than_700"], {
+				errorMap: () => ({ message: "Respuesta requerida" }),
+			}),
+			q21: z.string().min(2, "Esta respuesta es requerida"),
+			
+			// Care commitments (checkboxes)
+			p22_cuidados: z.string().array().optional(),
+			p23_cuidados: z.string().array().optional(),
+			
+			// Veterinary
+			q23_veterinary: z.enum(["yes", "no"], { errorMap: () => ({ message: "Respuesta requerida" }) }),
+			q24: z.string().array().optional(),
+			q25_resources: z.enum(["yes", "no"], { errorMap: () => ({ message: "Respuesta requerida" }) }),
+			q25_details: z.string().optional(),
+			
+			// Acceptance
+			aceptoCondiciones: z.literal("si", {
+				errorMap: () => ({ message: "Debes aceptar las condiciones" }),
+			}),
+			informacionVeraz: z.literal("si", {
+				errorMap: () => ({ message: "Debes confirmar que la información es veraz" }),
+			}),
+			
+			// File upload
+			ine_archivo: z
+				.instanceof(File)
+				.refine(
+					(file) => file.size > 0 && file.size <= 10000000,
+					"El archivo debe ser menor a 10MB"
+				)
+				.refine(
+					(file) =>
+						["image/jpeg", "image/png", "image/webp", "application/pdf"].includes(
+							file.type
+						),
+					"Solo se permiten archivos JPG, PNG, WebP o PDF"
+				)
+				.optional(),
 		}),
 		handler: async (input, context) => {
-			console.log(input);
-			// Aquí iría la lógica para crear una solicitud de adopción
-			// Por simplicidad, asumiremos que la función existe y funciona correctamente
+			const {
+				createAdoptionRequest,
+				uploadIdDocument,
+			} = await import("@/services/adoption");
 
-			// const { success, error } = await createAdoptionRequest(pet_id, user_id, message);
+			// Handle q24 array (veterinary name and phone)
+			const q24Array = input.q24 || [];
+			const q24_vet_name = q24Array[0] || undefined;
+			const q24_vet_phone = q24Array[1] || undefined;
+			
+			// Prepare data for service
+			const adoptionData = {
+				pet_id: input.pet_id,
+				name: input.name,
+				lastname: input.lastname,
+				birthdate: input.birthdate,
+				status: input.status,
+				city: input.city,
+				personalId: input.personalId,
+				address: input.address,
+				zipcode: input.zipcode,
+				email: input.email,
+				cellphone: input.cellphone,
+				career: input.career,
+				officePhone: input["office-phone"],
+				fullname1: input.fullname1,
+				cellphone1: input.cellphone1,
+				fullname2: input.fullname2,
+				cellphone2: input.cellphone2,
+				q1: input.q1,
+				q2_others_pets: input.q2_others_pets,
+				q2_which_pets: input.q2_which_pets,
+				q3_esterilized: input.q3_esterilized,
+				q3_why_not_sterilized: input.q3_why_not_sterilized,
+				q4_had_other_pets: input.q4_had_other_pets,
+				q4_what_happened: input.q4_what_happened,
+				q4_allow_home_visits: input.q4_allow_home_visits,
+				q5_why_not_allow_home_visits: input.q5_why_not_allow_home_visits,
+				q7_persons: input.q7_persons,
+				q8_agree_adopt: input.q8_agree_adopt,
+				q8_comments: input.q8_comments,
+				q9_children: input.q9_children,
+				q9_children_ages: input.q9_children_ages,
+				q10_allergic: input.q10_allergic,
+				q11_allowed_pets: input.q11_allowed_pets,
+				q12: input.q12,
+				q13: input.q13,
+				q14: input.q14,
+				q15: input.q15,
+				q16_space_enough: input.q16_space_enough,
+				q16_description: input.q16_description,
+				q17: input.q17,
+				q18: input.q18,
+				q19: input.q19,
+				q20_budget: input.q20_budget,
+				q21: input.q21,
+				p22_cuidados: input.p22_cuidados,
+				p23_cuidados: input.p23_cuidados,
+				q23_veterinary: input.q23_veterinary,
+				q24_vet_name,
+				q24_vet_phone,
+				q25_resources: input.q25_resources,
+				q25_details: input.q25_details,
+				aceptoCondiciones: input.aceptoCondiciones,
+				informacionVeraz: input.informacionVeraz,
+			};
 
-			// if (!success) {
-			// 	throw new ActionError({
-			// 		code: "BAD_REQUEST",
-			// 		message: error ?? "Error al enviar la solicitud de adopción",
-			// 	});
-			// }
+			// Create adoption request
+			const { success, error, requestId } = await createAdoptionRequest(adoptionData);
+
+			if (!success || !requestId) {
+				throw new ActionError({
+					code: "BAD_REQUEST",
+					message: error ?? "Error al enviar la solicitud de adopción",
+				});
+			}
+
+			// Upload ID document if provided
+			if (input.ine_archivo && input.ine_archivo.size > 0) {
+				const uploadResult = await uploadIdDocument(requestId, input.ine_archivo);
+				
+				if (!uploadResult.success) {
+					console.error("Error uploading document:", uploadResult.error);
+					// Don't fail the request if document upload fails
+					// Just log it and continue
+				}
+			}
 
 			return {
 				success: true,
 				message: "Solicitud de adopción enviada exitosamente",
+				requestId,
 			};
 		},
 	}),

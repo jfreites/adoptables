@@ -3,11 +3,11 @@ import { actions } from "astro:actions";
 
 interface Props {
 	pet?: any;
-	organizacion?: any;
+	organization?: any;
 }
 
 // Captura el query param para mostrar el mensaje
-const showSuccess = Astro.url.searchParams.get('success') === 'true';;
+const showSuccess = Astro.url.searchParams.get('success') === 'true';
 
 const { pet, organization } = Astro.props;
 ---
@@ -15,9 +15,10 @@ const { pet, organization } = Astro.props;
 <div style="max-width: 960px; margin: 2rem auto;">
 	{showSuccess && (
 	  <div class="success-message">
-	    Solicitud de adopción enviada exitosamente
+	    ✅ Solicitud de adopción enviada exitosamente. Nos pondremos en contacto contigo pronto.
 	  </div>
 	)}
+	<div id="error-message" class="error-message" style="display: none;"></div>
 
 	<form
 		class="space-y-6"
@@ -264,12 +265,12 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label for="cellphone1" class="text-sm font-medium sr-only"
+					<label for="cellphone2" class="text-sm font-medium sr-only"
 						>Número Celular</label
 					>
 					<input
-						id="cellphone1"
-						name="cellphone1"
+						id="cellphone2"
+						name="cellphone2"
 						type="tel"
 						placeholder="Referencia 2: Número Celular"
 						required=""
@@ -912,11 +913,11 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label for="q24" class="text-md font-medium text-primary"
+					<label for="q24_name" class="text-md font-medium text-primary"
 						>Nombre del médico veterinario y teléfono</label
 					>
 					<input
-						id="q24"
+						id="q24_name"
 						name="q24"
 						type="text"
 						placeholder="Nombre completo"
@@ -924,7 +925,7 @@ const { pet, organization } = Astro.props;
 					/>
 
 					<input
-						id="q24"
+						id="q24_phone"
 						name="q24"
 						type="tel"
 						placeholder="Teléfono"
@@ -966,7 +967,6 @@ const { pet, organization } = Astro.props;
 				</div>
 			</div>
 		</div>
-
 
 		<!-- Agreements -->
 		<div class="space-y-4 form-section-card">
@@ -1044,16 +1044,91 @@ const { pet, organization } = Astro.props;
   import { actions } from 'astro:actions';
 
   const form = document.getElementById('submit-adoption-form') as HTMLFormElement;
+  const submitButton = form?.querySelector('button[type="submit"]') as HTMLButtonElement;
+  const errorMessageDiv = document.getElementById('error-message') as HTMLDivElement;
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(form);
+    // Clear previous errors
+    errorMessageDiv.style.display = 'none';
+    errorMessageDiv.textContent = '';
 
-    const { data, error } = await actions.adoption_request(formData);
+    // Disable submit button and show loading state
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Enviando...';
+    }
 
-    if (data?.success) {
-      window.location.href = `${window.location.pathname}?success=true`;
+    try {
+      const formData = new FormData(form);
+
+      const { data, error } = await actions.adoption_request(formData);
+
+      if (error) {
+        // Handle validation errors
+        let errorMessage = 'Error al enviar la solicitud. ';
+
+        if (error.code === 'BAD_REQUEST') {
+          errorMessage += error.message || 'Por favor verifica los datos del formulario.';
+        } else if ((error as any).fields) {
+          // Handle field-specific errors
+          const entries = Object.entries((error as any).fields as Record<string, any>);
+          const fieldErrors = entries
+            .map(([field, err]) => {
+              const fieldName = field.replace(/_/g, ' ');
+              const msg = Array.isArray(err) ? err[0] : String(err);
+              return `${fieldName}: ${msg}`;
+            })
+            .join('\n');
+          errorMessage += '\n' + fieldErrors;
+        } else {
+          errorMessage += (error as any).message || 'Error desconocido';
+        }
+
+        errorMessageDiv.textContent = errorMessage;
+        errorMessageDiv.style.display = 'block';
+
+        // Scroll to error message
+        errorMessageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (data?.success) {
+        // Success - redirect with success message
+        window.location.href = `${window.location.pathname}?success=true`;
+      }
+    } catch (err) {
+      console.error('Error submitting form:', err);
+      errorMessageDiv.textContent = 'Error inesperado al enviar la solicitud. Por favor intenta de nuevo.';
+      errorMessageDiv.style.display = 'block';
+      errorMessageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } finally {
+      // Re-enable submit button
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Enviar solicitud';
+      }
     }
   });
 </script>
+
+<style>
+  .success-message {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+
+  .error-message {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    white-space: pre-line;
+    font-weight: 500;
+  }
+</style>
