@@ -14,14 +14,18 @@ if (!pet) {
 
 <Layout>
 	<div class="container mx-auto px-4 py-12">
-		<h3 class="text-center text-2xl text-primary">
+		<h3 class="text-center text-3xl text-primary">
 			Solicitud de adopción de <strong>{pet.name}</strong>
 		</h3>
 
-		<p class="text-center py-4 font-semibold">
-			Los datos estan protegidos y se usarán sólo para este proceso.
+		<p class="text-center py-4 font-semibold max-w-3xl mx-auto">
+			Los datos estan protegidos y se usarán sólo para este proceso. Asegúrese de proporcionar un correo electrónico válido pues se enviará un enlace para carga de documentos.
 		</p>
 
-		<AdoptionForm pet={pet} organization={organization} />
+		<p class="text-center text-md py-2 text-red-500">
+			✲ Todos los campos son requeridos.
+		</p>
+
+		<AdoptionForm pet={pet} rules={rule} organization={organization} />
 	</div>
 </Layout>

@@ -68,7 +68,7 @@ const pet = result.data?.pet || null;
 
                 <div class="flex flex-wrap gap-2">
                     <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground">{pet.species === 'dog' ? '🐶 Perro' : '🐱 Gato'}</span>
-                    <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.age} años</span>
+                    <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.age} {Number(pet.age) > 1 ? 'años' : 'año'}</span>
                     <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{pet.gender === 'male' ? 'Macho' : 'Hembra'}</span>
                     <span class="rounded-full px-4 py-2 text-base bg-muted text-foreground/90">{translatePetSpecies(pet.size)}</span>
                 </div>
@@ -79,7 +79,7 @@ const pet = result.data?.pet || null;
                     <div class="grid grid-cols-2 gap-4">
                     <div>
                         <p class="text-sm text-muted-foreground mb-1">Edad</p>
-                        <p class="font-semibold text-lg">{pet.age} años</p>
+                        <p class="font-semibold text-lg">{pet.age} {Number(pet.age) > 1 ? 'años' : 'año'}</p>
                     </div>
                     <div>
                         <p class="text-sm text-muted-foreground mb-1">Talla</p>

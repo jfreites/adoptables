@@ -69,14 +69,14 @@ const { id, name, slug, age, breed, location, type, pet_images } =
 		<span
 			class="absolute top-4 left-4 rounded-full px-3 py-1 text-sm font-semibold bg-primary text-primary-foreground"
 		>
-			{type === "dog" ? "🐶 Dog" : "🐱 Cat"}
+			{type === "dog" ? "🐶 Perro" : "🐱 Gato"}
 		</span>
 	</div>
 
 	<div class="p-6 space-y-2">
 		<h3 class="text-2xl font-bold">{name}</h3>
 		<p class="text-muted-foreground">{breed}</p>
-		<p class="text-sm font-medium text-primary">{age}</p>
+		<p class="text-sm font-medium text-primary">{age} {Number(age) > 1 ? 'años' : 'año'}</p>
 		<div class="flex items-center gap-2 text-sm text-muted-foreground">
 			<!-- MapPin icon -->
 			<svg
