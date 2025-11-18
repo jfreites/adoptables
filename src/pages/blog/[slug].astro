@@ -1,26 +1,12 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { Calendar, Share2, User } from "@lucide/astro";
+import { ArrowLeft, Calendar, Share2, User } from "@lucide/astro";
 
 // URL param
 const { slug } = Astro.params;
+console.log(slug);
 
-const handleShare = () => {
-    if (navigator.share) {
-        navigator.share({
-        title: "post title",
-        text: "post.excerpt",
-        url: window.location.href,
-        }).catch(() => {
-        // Fallback if share fails
-        navigator.clipboard.writeText(window.location.href);
-        //toast.success("Link copied to clipboard!");
-        });
-    } else {
-        navigator.clipboard.writeText(window.location.href);
-        //toast.success("Link copied to clipboard!");
-    }
-};
+// TODO: fetch blog data using the slug
 ---
 <Layout>
     {/* Hero Image */}
@@ -39,13 +25,9 @@ const handleShare = () => {
           <div class="bg-card text-card-foreground shadow-sm max-w-4xl mx-auto p-8 md:p-12 rounded-3xl border-2">
             {/* Header */}
             <div class="mb-8">
-              <a href="/blog">
-                 {/*
-                <Button variant="ghost" className="rounded-full mb-6 -ml-4">
-                  <ArrowLeft className="mr-2 w-4 h-4" />
-                  Back to Blog
-                </Button>
-                */}
+              <a href="/blog" class="rounded-full mb-6 -ml-4 inline-flex items-center">
+                  <ArrowLeft class="mr-2 w-4 h-4" />
+                  Volver al Blog
               </a>
               <div class="mb-4">
                 <span class="bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-sm font-semibold">
@@ -68,9 +50,8 @@ const handleShare = () => {
                 </div>
               </div>
 
-              <button
-                class="rounded-full button-outline"
-                onclick={handleShare}
+              <button id="share-btn"
+                class="rounded-full inline-flex items-center cursor-pointer"
               >
                 <Share2 class="w-4 h-4 mr-2" />
                 Comparte el artículo
@@ -81,7 +62,7 @@ const handleShare = () => {
             <div
               class="prose prose-lg max-w-none prose-headings:font-bold prose-h2:text-3xl prose-h2:mt-8 prose-h2:mb-4 prose-p:text-muted-foreground prose-p:leading-relaxed prose-ul:text-muted-foreground prose-li:my-2"
             >
-                contenido ...
+                contenido aqui (en construcción)...
             </div>
           </div>
 
@@ -89,8 +70,35 @@ const handleShare = () => {
           <div class="max-w-4xl mx-auto mt-16 mb-20">
             <h2 class="text-3xl font-bold mb-8">Otros Artículos</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                ...
+                Pronto...
             </div>
           </div>
     </article>
 </Layout>
+
+<script>
+ function handleShare() {
+    if (navigator.share) {
+        navigator.share({
+        title: "post title",
+        text: "post.excerpt",
+        url: window.location.href,
+        }).catch(() => {
+        // Fallback if share fails
+        navigator.clipboard.writeText(window.location.href);
+        //toast.success("Link copied to clipboard!");
+        });
+    } else {
+        navigator.clipboard.writeText(window.location.href);
+        //toast.success("Link copied to clipboard!");
+    }
+};
+
+// Get the button element
+const shareBtn = document.getElementById('share-btn');
+
+// Attach the click event listener
+if (shareBtn) {
+    shareBtn.addEventListener('click', handleShare);
+}
+</script>
