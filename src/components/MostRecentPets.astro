@@ -2,49 +2,6 @@
 import { actions } from "astro:actions";
 
 import PetCard from "@/components/PetCard.astro";
-import petDog1 from "@/assets/pet-dog-1.jpg";
-import petCat1 from "@/assets/pet-cat-1.jpg";
-import petDog2 from "@/assets/pet-dog-2.jpg";
-import petCat2 from "@/assets/pet-cat-2.jpg";
-
-const localRecentPets = [
-	{
-		id: "1",
-		name: "Buddy",
-		image: petDog1,
-		age: "2 years old",
-		breed: "Golden Retriever",
-		location: "San Francisco, CA",
-		type: "dog" as const,
-	},
-	{
-		id: "2",
-		name: "Luna",
-		image: petCat1,
-		age: "1 year old",
-		breed: "Orange Tabby",
-		location: "Los Angeles, CA",
-		type: "cat" as const,
-	},
-	{
-		id: "3",
-		name: "Max",
-		image: petDog2,
-		age: "3 years old",
-		breed: "Beagle",
-		location: "Seattle, WA",
-		type: "dog" as const,
-	},
-	{
-		id: "4",
-		name: "Whiskers",
-		image: petCat2,
-		age: "2 years old",
-		breed: "Persian",
-		location: "Portland, OR",
-		type: "cat" as const,
-	},
-];
 
 const results = await Astro.callAction(actions.recent_pets, {
 	limit: 4,

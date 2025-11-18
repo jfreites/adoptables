@@ -1,0 +1,31 @@
+---
+import Layout from "@/layouts/Layout.astro";
+
+// URL param
+const { slug } = Astro.params;
+console.log(slug);
+---
+<Layout>
+    {/* Hero Section */}
+    <section class="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 py-20">
+        <div class="container mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6">
+            Adopta Con Amor Blog
+            </h1>
+            <p class="text-xl text-muted-foreground">
+            Consejos expertos, historias hermosas, y guias esenciales para "pet lovers".
+            </p>
+        </div>
+        </div>
+    </section>
+
+    {/* Blog Posts Grid */}
+    <section class="py-20">
+        <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        </div>
+        </div>
+    </section>
+</Layout>

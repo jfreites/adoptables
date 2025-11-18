@@ -3,21 +3,23 @@ import { actions } from "astro:actions";
 
 interface Props {
 	pet?: any;
-	organizacion?: any;
+	rules?: any;
+	organization?: any;
 }
 
 // Captura el query param para mostrar el mensaje
-const showSuccess = Astro.url.searchParams.get('success') === 'true';;
+const showSuccess = Astro.url.searchParams.get('success') === 'true';
 
-const { pet, organization } = Astro.props;
+const { pet, rules, organization } = Astro.props;
 ---
 
 <div style="max-width: 960px; margin: 2rem auto;">
 	{showSuccess && (
 	  <div class="success-message">
-	    Solicitud de adopción enviada exitosamente
+	    ✅ Solicitud de adopción enviada exitosamente. Nos pondremos en contacto contigo pronto.
 	  </div>
 	)}
+	<div id="error-message" class="error-message" style="display: none;"></div>
 
 	<form
 		class="space-y-6"
@@ -36,7 +38,7 @@ const { pet, organization } = Astro.props;
 
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 				<div class="space-y-2">
-					<label for="name" class="text-sm font-medium sr-only"
+					<label for="name" class="text-md font-medium text-primary"
 						>Nombres</label
 					>
 					<input
@@ -50,7 +52,7 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label for="lastnamel" class="text-sm font-medium sr-only"
+					<label for="lastname" class="text-md font-medium text-primary"
 						>Apellidos</label
 					>
 					<input
@@ -64,23 +66,20 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label
-						for="birthdate"
-						class="text-md font-medium text-primary"
-						>Fecha de Nacimiento
-
-						<input
-							id="birthdate"
-							name="birthdate"
-							type="date"
-							required=""
-							class="w-full md:w-[60%] h-11 px-3 rounded-md border bg-background inline-block"
-						/>
-					</label>
+					<label for="birthdate" class="text-md font-medium text-primary"
+						>Fecha de Nacimiento</label
+					>
+					<input
+						id="birthdate"
+						name="birthdate"
+						type="date"
+						required=""
+						class="w-full h-11 px-3 rounded-md border bg-background"
+					/>
 				</div>
 
 				<div class="space-y-2">
-					<label for="status" class="text-sm font-medium sr-only"
+					<label for="status" class="text-md font-medium text-primary"
 						>Estado Civil</label
 					>
 					<select
@@ -100,7 +99,7 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label for="city" class="text-sm font-medium sr-only"
+					<label for="city" class="text-md font-medium text-primary"
 						>Ciudad</label
 					>
 					<input
@@ -114,11 +113,11 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label for="login-email" class="text-sm font-medium sr-only"
+					<label for="personalId" class="text-md font-medium text-primary"
 						>INE (número) / Pasaporte</label
 					>
 					<input
-						id="birthdate"
+						id="personalId"
 						name="personalId"
 						type="text"
 						placeholder="Número de INE o Pasaporte"
@@ -128,7 +127,7 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label for="address" class="text-sm font-medium sr-only"
+					<label for="address" class="text-md font-medium text-primary"
 						>Dirección</label
 					>
 					<input
@@ -142,7 +141,7 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label for="zipcode" class="text-sm font-medium sr-only"
+					<label for="zipcode" class="text-md font-medium text-primary"
 						>Código postal</label
 					>
 					<input
@@ -156,7 +155,7 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label for="email" class="text-sm font-medium sr-only"
+					<label for="email" class="text-md font-medium text-primary"
 						>E-mail</label
 					>
 					<input
@@ -170,7 +169,7 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label for="cellphone" class="text-sm font-medium sr-only"
+					<label for="cellphone" class="text-md font-medium text-primary"
 						>Número Celular</label
 					>
 					<input
@@ -184,7 +183,7 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label for="career" class="text-sm font-medium sr-only"
+					<label for="career" class="text-md font-medium text-primary"
 						>Profesión</label
 					>
 					<input
@@ -198,9 +197,7 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label
-						for="office-phone"
-						class="text-sm font-medium sr-only"
+					<label for="office-phone" class="text-md font-medium text-primary"
 						>Número Oficina</label
 					>
 					<input
@@ -222,7 +219,7 @@ const { pet, organization } = Astro.props;
 
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 				<div class="space-y-2">
-					<label for="fullname1" class="text-sm font-medium sr-only"
+					<label for="fullname1" class="text-md font-medium text-primary"
 						>Nombre Completo</label
 					>
 					<input
@@ -236,7 +233,7 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label for="cellphone1" class="text-sm font-medium sr-only"
+					<label for="cellphone1" class="text-md font-medium text-primary"
 						>Número Celular</label
 					>
 					<input
@@ -250,7 +247,7 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label for="fullname2" class="text-sm font-medium sr-only"
+					<label for="fullname2" class="text-md font-medium text-primary"
 						>Nombre Completo</label
 					>
 					<input
@@ -264,12 +261,12 @@ const { pet, organization } = Astro.props;
 				</div>
 
 				<div class="space-y-2">
-					<label for="cellphone1" class="text-sm font-medium sr-only"
+					<label for="cellphone2" class="text-md font-medium text-primary"
 						>Número Celular</label
 					>
 					<input
-						id="cellphone1"
-						name="cellphone1"
+						id="cellphone2"
+						name="cellphone2"
 						type="tel"
 						placeholder="Referencia 2: Número Celular"
 						required=""
@@ -286,7 +283,7 @@ const { pet, organization } = Astro.props;
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 				<div class="space-y-2">
 					<label for="q1" class="text-md font-medium text-primary"
-						>¿Por qué desea adoptar una mascota?</label
+						>¿Por qué desea adoptar a <strong>{pet.name}</strong>?</label
 					>
 					<textarea
 						id="q1"
@@ -298,7 +295,7 @@ const { pet, organization } = Astro.props;
 
 				<div class="space-y-2">
 					<label for="q2" class="text-md font-medium text-primary"
-						>¿Tienes más animalitos?</label
+						>¿En su actual residencia convive con otras mascotas?</label
 					>
 
 					<br />
@@ -321,47 +318,53 @@ const { pet, organization } = Astro.props;
 						/>
 						Si</label
 					>
-					<label class="ml-2 text-sm font-medium">¿Cuales?</label>
-					<input
-						id="q2_which_pets"
-						name="q2_which_pets"
-						type="text"
-						class="w-full h-11 px-3 rounded-md border bg-background inline-block"
-					/>
+					<div id="q2_which_pets_container" style="display: none;">
+						<label class="ml-2 text-sm font-medium">¿Cuales? Describa especie y edad.</label>
+						<input
+							id="q2_which_pets"
+							name="q2_which_pets"
+							type="text"
+							class="w-full h-11 px-3 rounded-md border bg-background inline-block"
+						/>
+					</div>
 				</div>
 
-				<div class="space-y-2">
-					<label for="q2" class="text-md font-medium text-primary"
-						>Si los tiene, ¿están esterilizados?</label
-					>
+				<div id="q3_sterilized_pets_container" style="display: none;">
+					<div class="space-y-2">
+						<label for="q2" class="text-md font-medium text-primary"
+							>¿Están esterilizadas?</label
+						>
 
-					<br />
+						<br />
 
-					<label class="text-sm font-medium"
-						><input
-							type="radio"
-							name="q3_esterilized"
-							value="yes"
-							required
-						/>
-						Si</label
-					>
-					<label class="text-sm font-medium"
-						><input
-							type="radio"
-							name="q3_esterilized"
-							value="no"
-							required
-						/>
-						No</label
-					>
-					<label class="ml-2 text-sm font-medium">¿Por qué?</label>
-					<input
-						id="q3_why_not_sterilized"
-						name="q3_why_not_sterilized"
-						type="text"
-						class="w-full h-11 px-3 rounded-md border bg-background inline-block"
-					/>
+						<label class="text-sm font-medium"
+							><input
+								type="radio"
+								name="q3_esterilized"
+								value="yes"
+								required
+							/>
+							Si</label
+						>
+						<label class="text-sm font-medium"
+							><input
+								type="radio"
+								name="q3_esterilized"
+								value="no"
+								required
+							/>
+							No</label
+						>
+						<div id="q3_why_not_sterilized_container" style="display: none;">
+							<label class="ml-2 text-sm font-medium">¿Por qué?</label>
+							<input
+								id="q3_why_not_sterilized"
+								name="q3_why_not_sterilized"
+								type="text"
+								class="w-full h-11 px-3 rounded-md border bg-background inline-block"
+							/>
+						</div>
+					</div>
 				</div>
 
 				<div class="space-y-2">
@@ -389,14 +392,16 @@ const { pet, organization } = Astro.props;
 						/>
 						Si</label
 					>
-					<label class="ml-2 text-sm font-medium"
-						>¿Qué fue lo que pasó con él/ellos?</label
-					>
-					<textarea
-						id="q4_what_happened"
-						name="q4_what_happened"
-						class="w-full h-20 px-3 rounded-md border bg-background inline-block"
-					></textarea>
+					<div id="q4_what_happened_container" style="display: none;">
+						<label class="ml-2 text-sm font-medium"
+							>¿Qué fue lo que pasó con él/ellos?</label
+						>
+						<textarea
+							id="q4_what_happened"
+							name="q4_what_happened"
+							class="w-full h-20 px-3 rounded-md border bg-background inline-block"
+						></textarea>
+					</div>
 				</div>
 
 				<div class="space-y-2">
@@ -424,12 +429,14 @@ const { pet, organization } = Astro.props;
 						/>
 						No</label
 					>
-					<label class="ml-2 text-sm font-medium">¿Por qué no?</label>
-					<textarea
-						id="q5_why_not_allow_home_visits"
-						name="q5_why_not_allow_home_visits"
-						class="w-full h-20 px-3 rounded-md border bg-background inline-block"
-					></textarea>
+					<div id="q5_why_not_allow_home_visits_container" style="display: none;">
+						<label class="ml-2 text-sm font-medium">¿Por qué no?</label>
+						<textarea
+							id="q5_why_not_allow_home_visits"
+							name="q5_why_not_allow_home_visits"
+							class="w-full h-20 px-3 rounded-md border bg-background inline-block"
+						></textarea>
+					</div>
 				</div>
 
 				<div class="space-y-2">
@@ -507,13 +514,15 @@ const { pet, organization } = Astro.props;
 						/>
 						Sí</label
 					>
-					<label class="ml-2 text-sm font-medium">Edades</label>
-					<input
-						id="q9_children_ages"
-						name="q9_children_ages"
-						type="text"
-						class="form-input"
-					/>
+					<div id="q9_children_ages_container" style="display: none;">
+						<label class="ml-2 text-sm font-medium">Edades</label>
+						<input
+							id="q9_children_ages"
+							name="q9_children_ages"
+							type="text"
+							class="form-input"
+						/>
+					</div>
 				</div>
 
 				<div class="space-y-2">
@@ -680,7 +689,7 @@ const { pet, organization } = Astro.props;
 
 				<div class="space-y-2">
 					<label for="q18" class="text-md font-medium text-primary"
-						>¿Cuánto tiempo pasará solo el adoptable?</label
+						>¿Cuánto tiempo pasaría solo el adoptable? En caso de ausencias largas ¿quien lo cuidaría?</label
 					>
 					<textarea
 						id="q18"
@@ -692,7 +701,7 @@ const { pet, organization } = Astro.props;
 
 				<div class="space-y-2">
 					<label for="q19" class="text-md font-medium text-primary"
-						>Si el comportamiento del animalito no es el que desea,
+						>Si el comportamiento del adoptable no es el que desea,
 						¿qué medidas tomaría?</label
 					>
 					<textarea
@@ -911,25 +920,27 @@ const { pet, organization } = Astro.props;
 					>
 				</div>
 
-				<div class="space-y-2">
-					<label for="q24" class="text-md font-medium text-primary"
-						>Nombre del médico veterinario y teléfono</label
-					>
-					<input
-						id="q24"
-						name="q24"
-						type="text"
-						placeholder="Nombre completo"
-						class="form-input"
-					/>
+				<div id="q24_current_veterinary_container" style="display: none;">
+					<div class="space-y-2">
+						<label for="q24_name" class="text-md font-medium text-primary"
+							>Nombre del médico veterinario y teléfono</label
+						>
+						<input
+							id="q24_name"
+							name="q24"
+							type="text"
+							placeholder="Nombre completo"
+							class="form-input"
+						/>
 
-					<input
-						id="q24"
-						name="q24"
-						type="tel"
-						placeholder="Teléfono"
-						class="form-input"
-					/>
+						<input
+							id="q24_phone"
+							name="q24"
+							type="tel"
+							placeholder="Teléfono"
+							class="form-input"
+						/>
+					</div>
 				</div>
 
 				<div class="space-y-2">
@@ -967,7 +978,6 @@ const { pet, organization } = Astro.props;
 			</div>
 		</div>
 
-
 		<!-- Agreements -->
 		<div class="space-y-4 form-section-card">
 			<h3 class="text-xl font-semibold text-primary">
@@ -975,10 +985,10 @@ const { pet, organization } = Astro.props;
 			</h3>
 
 			<ol class="list-disc mr-4 ps-4">
-				<li>El adoptable se entregará al adoptante una vez aprobada esta solicitud y habiendo recibido copia de comprobante de domicilio, identificación oficial y fotos del domicilio que será el nuevo hogar del adoptable.</li>
-				<li>El adoptable se entregará para un periodo de prueba a convenir, después de la cual se entrará nuevamente en contacto con el adoptante para preguntar sobre el acoplamiento de ambos.</li>
-				<li>La protectora entrega copia firmada de este documento al adoptante y el carnet original de vacunaciones y estado de salud del ejemplar.</li>
-				<li>El adoptante se compromete a recibir la visita de la protectora que verificará el estado del adoptable, sin previa cita. Aclarando que si el protector detecta cualquier irregularidad que vaya en contra de lo aquí estipulado, tiene la facultad de realizar la recuperación del adoptable. Sanciones puede aplicar si el adoptable se entrega con muestras de maltrato o descuido a su salud.</li>
+				<li>El adoptable se entregará al adoptante una vez sea aprobada la solicitud y habiendo recibido copia de comprobante de domicilio, identificación oficial y fotos del domicilio que será el nuevo hogar del adoptable.</li>
+				<li>El adoptable se entregará para un periodo de prueba a convenir (ciertas condiciones aplican), después de la cual se entrará nuevamente en contacto con el adoptante para preguntar sobre el acoplamiento de ambos.</li>
+				<li>El responsable del proceso entrega copia firmada de este documento al adoptante y el carnet original de vacunaciones y estado de salud del ejemplar.</li>
+				<li>El adoptante se compromete a recibir visitas para verificar el estado del adoptable, sin previa cita. Aclarando que si el responsable del proceso detecta cualquier irregularidad que vaya en contra de lo aquí estipulado, tiene la facultad de realizar la recuperación del adoptable. Sanciones puede aplicar si el adoptable se entrega con muestras de maltrato o descuido a su salud.</li>
 			</ol>
 		</div>
 
@@ -1023,6 +1033,7 @@ const { pet, organization } = Astro.props;
 				</div>
 			</div>
 
+			{/*
 			<fieldset>
 				<label class="text-primary text-md"
 					>Adjuntar copia de INE/Pasaporte (En formato PDF o imagen)
@@ -1034,6 +1045,7 @@ const { pet, organization } = Astro.props;
 					/>
 				</label>
 			</fieldset>
+			*/}
 		</div>
 
 		<button class="btn btn-primary" type="submit">Enviar solicitud</button>
@@ -1044,16 +1056,116 @@ const { pet, organization } = Astro.props;
   import { actions } from 'astro:actions';
 
   const form = document.getElementById('submit-adoption-form') as HTMLFormElement;
+  const submitButton = form?.querySelector('button[type="submit"]') as HTMLButtonElement;
+  const errorMessageDiv = document.getElementById('error-message') as HTMLDivElement;
+
+  // Conditional field visibility logic
+  function setupConditionalField(radioName: string, containerId: string, showOnValue: string) {
+    const radios = document.querySelectorAll(`input[name="${radioName}"]`) as NodeListOf<HTMLInputElement>;
+    const container = document.getElementById(containerId) as HTMLElement;
+
+    radios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        if (radio.checked && radio.value === showOnValue) {
+          container.style.display = 'block';
+        } else if (radio.checked) {
+          container.style.display = 'none';
+        }
+      });
+    });
+  }
+
+  // Setup all conditional fields
+  setupConditionalField('q2_others_pets', 'q2_which_pets_container', 'yes');
+  setupConditionalField('q2_others_pets', 'q3_sterilized_pets_container', 'yes');
+  setupConditionalField('q3_esterilized', 'q3_why_not_sterilized_container', 'no');
+  setupConditionalField('q4_had_other_pets', 'q4_what_happened_container', 'yes');
+  setupConditionalField('q4_allow_home_visits', 'q5_why_not_allow_home_visits_container', 'no');
+  setupConditionalField('q9_children', 'q9_children_ages_container', 'yes');
+  setupConditionalField('q23_veterinary', 'q24_current_veterinary_container', 'yes');
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(form);
+    // Clear previous errors
+    errorMessageDiv.style.display = 'none';
+    errorMessageDiv.textContent = '';
 
-    const { data, error } = await actions.adoption_request(formData);
+    // Disable submit button and show loading state
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Enviando...';
+    }
 
-    if (data?.success) {
-      window.location.href = `${window.location.pathname}?success=true`;
+    try {
+      const formData = new FormData(form);
+
+      const { data, error } = await actions.adoption_request(formData);
+
+      if (error) {
+        // Handle validation errors
+        let errorMessage = 'Error al enviar la solicitud. ';
+
+        if (error.code === 'BAD_REQUEST') {
+          errorMessage += error.message || 'Por favor verifica los datos del formulario.';
+        } else if ((error as any).fields) {
+          // Handle field-specific errors
+          const entries = Object.entries((error as any).fields as Record<string, any>);
+          const fieldErrors = entries
+            .map(([field, err]) => {
+              const fieldName = field.replace(/_/g, ' ');
+              const msg = Array.isArray(err) ? err[0] : String(err);
+              return `${fieldName}: ${msg}`;
+            })
+            .join('\n');
+          errorMessage += '\n' + fieldErrors;
+        } else {
+          errorMessage += (error as any).message || 'Error desconocido';
+        }
+
+        errorMessageDiv.textContent = errorMessage;
+        errorMessageDiv.style.display = 'block';
+
+        // Scroll to error message
+        errorMessageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (data?.success) {
+        // Success - redirect with success message
+        window.location.href = `${window.location.pathname}?success=true`;
+      }
+    } catch (err) {
+      console.error('Error submitting form:', err);
+      errorMessageDiv.textContent = 'Error inesperado al enviar la solicitud. Por favor intenta de nuevo.';
+      errorMessageDiv.style.display = 'block';
+      errorMessageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } finally {
+      // Re-enable submit button
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Enviar solicitud';
+      }
     }
   });
 </script>
+
+<style>
+  .success-message {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+
+  .error-message {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    white-space: pre-line;
+    font-weight: 500;
+  }
+</style>
