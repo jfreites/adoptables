@@ -20,23 +20,6 @@ const logoutError = Astro.url.searchParams.get('error');
 // Check for "next" parameter to redirect after login
 const url = new URL(Astro.request.url);
 const next = url.searchParams.get('next') ?? '/dashboard';
-
-// If login is successful, set cookies and redirect
-// if (isSuccess && data?.session) {
-//   const cookieConf: AstroCookieSetOptions = {
-//     path: '/',
-//     maxAge: 60 * 60 * 24 * 7, // 7 days
-//     httpOnly: true,
-//     secure: import.meta.env.PROD,
-//     sameSite: 'lax'
-//   }
-
-//   Astro.cookies.set('sb-access-token', data.session.access_token, cookieConf);
-
-//   Astro.cookies.set('sb-refresh-token', data.session.refresh_token, cookieConf);
-
-//   return Astro.redirect(next || '/dashboard');
-// }
 ---
 
 <Layout>

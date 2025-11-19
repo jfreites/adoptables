@@ -9,6 +9,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { completeUserRegistration } from "@/services/auth";
 import { makeSlug } from "@/lib/utils";
+import { getPostBySlug } from "@/services/blog";
 
 export const server = {
 	publish_pet: defineAction({
@@ -520,6 +521,20 @@ export const server = {
 				success: true,
 				message: "Solicitud de adopción enviada exitosamente",
 				requestId,
+			};
+		},
+	}),
+	get_blog_post_by_slug: defineAction({
+		input: z.object({
+			slug: z.string().min(1),
+		}),
+		async handler({ slug }) {
+			const { post, error } = await getPostBySlug(slug);
+
+			console.log(post);
+
+			return {
+				post,
 			};
 		},
 	}),
