@@ -75,7 +75,8 @@
 		--popover: 0 0% 100%;
 		--popover-foreground: 280 20% 15%;
 
-		--primary: 265 35% 70%;
+		--old-primary: 265 35% 70%;
+        --primary: 10 92% 67%;
 		--primary-foreground: 0 0% 100%;
 
 		--secondary: 25 100% 87%;
@@ -193,6 +194,11 @@
 			max-width: 1400px;
 		} /* from old config.screens["2xl"] */
 	}
+}
+
+.wysiwyg-content,
+.wysiwyg-content * {
+    all: revert;
 }
 
 .btn {

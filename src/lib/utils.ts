@@ -135,3 +135,11 @@ export function translatePetSpecies(
 	// Return the value, or a default 'Unknown' for safety
 	return humanReadableValue || "Desconocido";
 }
+
+export function formatDate(dateString: string) {
+    return new Date(dateString).toLocaleDateString('es-MX', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+}

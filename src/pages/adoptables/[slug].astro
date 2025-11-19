@@ -142,7 +142,6 @@ const pet = result.data?.pet || null;
 </Layout>
 
 <script is:inline>
-  // Share button: copy URL to clipboard and provide a simple a11y status update
   const shareBtn = document.getElementById('share-btn');
   const shareStatus = document.getElementById('share-status');
   if (shareBtn) {
@@ -150,24 +149,17 @@ const pet = result.data?.pet || null;
       try {
         await navigator.clipboard.writeText(window.location.href);
         if (shareStatus) {
-          shareStatus.textContent = 'Link copied to clipboard!';
+          shareStatus.textContent = '¡El enlace para compartir fue copiado!';
           shareStatus.classList.remove('sr-only');
           setTimeout(() => shareStatus.classList.add('sr-only'), 1500);
         }
       } catch (e) {
         if (shareStatus) {
-          shareStatus.textContent = 'Unable to copy link';
+          shareStatus.textContent = 'No se pudo copiar el enlace.';
           shareStatus.classList.remove('sr-only');
           setTimeout(() => shareStatus.classList.add('sr-only'), 1500);
         }
       }
     });
   }
-
-  // Apply button opens the <dialog> modal
-  //const applyBtn = document.getElementById('apply-btn');
-  //const modal = document.getElementById('auth-modal');
-  //if (applyBtn && modal && typeof modal.showModal === 'function') {
-  //  applyBtn.addEventListener('click', () => modal.showModal());
-  //}
 </script>

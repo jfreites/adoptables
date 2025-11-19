@@ -3,76 +3,9 @@ import "../styles/app.css";
 
 import Navbar from "@/components/Navbar.astro";
 import Footer from "@/components/Footer.astro";
-import { supabase } from "@/lib/supabase";
 
-// Check if user is authenticated globally
-//const accessToken = Astro.cookies.get("sb-access-token")?.value;
-//const refreshToken = Astro.cookies.get("sb-refresh-token")?.value;
-
-//let user = null;
-
-// Ahora accedes al usuario desde Astro.locals (sin tocar cookies)
 const user = Astro.locals.user;
 const session = Astro.locals.session;
-
-/*
-if (accessToken && refreshToken) {
-	try {
-		const {
-			data: { user: currentUser },
-			error,
-		} = await supabase.auth.getUser(accessToken);
-
-		if (!error && currentUser) {
-			user = currentUser;
-		} else {
-			// Try to refresh the session
-			const { data: refreshData, error: refreshError } =
-				await supabase.auth.refreshSession({
-					refresh_token: refreshToken,
-				});
-
-			if (!refreshError && refreshData.session) {
-				// Update cookies with new tokens
-				Astro.cookies.set(
-					"sb-access-token",
-					refreshData.session.access_token,
-					{
-						path: "/",
-						maxAge: 60 * 60 * 24 * 7,
-						httpOnly: true,
-						secure: import.meta.env.PROD,
-						sameSite: "lax",
-					},
-				);
-
-				Astro.cookies.set(
-					"sb-refresh-token",
-					refreshData.session.refresh_token,
-					{
-						path: "/",
-						maxAge: 60 * 60 * 24 * 7,
-						httpOnly: true,
-						secure: import.meta.env.PROD,
-						sameSite: "lax",
-					},
-				);
-
-				user = refreshData.user;
-			} else {
-				// Clear invalid cookies
-				Astro.cookies.delete("sb-access-token", { path: "/" });
-				Astro.cookies.delete("sb-refresh-token", { path: "/" });
-			}
-		}
-	} catch (error) {
-		console.error("Auth check error in Layout:", error);
-		// Clear cookies on error
-		Astro.cookies.delete("sb-access-token", { path: "/" });
-		Astro.cookies.delete("sb-refresh-token", { path: "/" });
-	}
-}
-*/
 ---
 
 <!doctype html>
